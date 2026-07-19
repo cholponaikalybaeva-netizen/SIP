@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIP — Style Identity Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<style>
+/* ─── RESET & TOKENS ─────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF8F5; --bg2:#F5F0FA; --bg3:#EDE6F8;
+  --ink:#1A0828; --ink2:rgba(26,8,40,.6); --ink3:rgba(26,8,40,.3);
+  --pm:#B0579A; --pm2:rgba(176,87,154,.14); --pu:#7A2A90;
+  --gd:#C4943A; --rule:rgba(26,8,40,.07);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --f:'Atkinson Hyperlegible',Arial,sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);overflow-x:hidden;cursor:none}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--f);cursor:none}
+:focus-visible{outline:2px solid var(--pm);outline-offset:3px;border-radius:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ─── CURSOR ──────────────────────────────────────── */
+#cur-dot,#cur-ring{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transition:width .18s,height .18s,opacity .2s}
+#cur-dot{width:7px;height:7px;background:var(--pm);transform:translate(-50%,-50%)}
+#cur-ring{width:36px;height:36px;border:1.5px solid rgba(176,87,154,.55);transform:translate(-50%,-50%)}
+
+/* ─── NAV ────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:rgba(250,248,245,.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--rule);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:34px;height:30px;flex-shrink:0}
+.logo-wordmark{display:flex;flex-direction:column;line-height:1}
+.logo-text{font-weight:700;font-size:1.1rem;letter-spacing:.04em;color:var(--ink)}
+.logo-sub{font-size:.6rem;letter-spacing:.14em;color:var(--pm);text-transform:uppercase;margin-top:2px}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:.8rem;letter-spacing:.07em;color:var(--ink2);text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--pm)}
+.nav-cta{background:var(--pm);color:#fff;border:none;padding:9px 22px;font-size:.78rem;letter-spacing:.07em;border-radius:2px;text-transform:uppercase;transition:background .2s}
+.nav-cta:hover{background:var(--pu)}
+
+/* ─── HERO ───────────────────────────────────────── */
+.hero{
+  position:relative;min-height:100svh;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;
+  padding:78px 0 52px;
+  background:radial-gradient(ellipse 72% 65% at 50% 38%,
+    rgba(200,168,216,.22) 0%,rgba(240,184,200,.1) 42%,var(--bg) 100%);
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+.lotus-stage{
+  width:min(52vmin,480px);height:min(52vmin,480px);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;z-index:2;
+}
+#lotusSvg{
+  width:100%;height:100%;
+  overflow:visible;will-change:transform;
+  animation:lotusFloat 9s ease-in-out 2s infinite;
+}
+@keyframes lotusFloat{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  30%{transform:scale(1.014) rotate(.4deg)}
+  65%{transform:scale(1.008) rotate(-.32deg)}
+}
+.play{
+  transform-box:fill-box;transform-origin:center center;
+  opacity:0;transform:scale(.15);
+  transition:opacity 1.4s var(--ease),transform 1.4s var(--ease);
+}
+.play.show{opacity:1;transform:scale(1)}
+.osc-a{animation:oscA 13s ease-in-out infinite}
+.osc-b{animation:oscB 15s ease-in-out .7s infinite}
+.osc-c{animation:oscC 11s ease-in-out 1.2s infinite}
+.osc-d{animation:oscD 17s ease-in-out .4s infinite}
+.osc-e{animation:oscA 12s ease-in-out 1.8s infinite}
+@keyframes oscA{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.007) rotate(.26deg)}}
+@keyframes oscB{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.005) rotate(-.2deg)}}
+@keyframes oscC{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.009) rotate(.18deg)}}
+@keyframes oscD{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.011) rotate(-.28deg)}}
+@keyframes glowPulse{0%,100%{opacity:.9;r:52}50%{opacity:1;r:56}}
+.pollen{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:3;
+  animation:pollenRise var(--dur,7s) ease-in-out var(--del,0s) infinite;opacity:0;
+}
+@keyframes pollenRise{
+  0%{transform:translateY(0) translateX(0) scale(1);opacity:0}
+  18%{opacity:.75}
+  82%{opacity:.22}
+  100%{transform:translateY(var(--ry,-160px)) translateX(var(--rx,35px)) scale(.35);opacity:0}
+}
+
+.hero-label{
+  position:absolute;top:96px;left:50%;transform:translateX(-50%);
+  font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink3);white-space:nowrap;z-index:6;
+  animation:fadeSlideUp 1.2s var(--ease) .3s both;
+}
+.eu-badge{
+  position:absolute;top:88px;right:48px;
+  font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid rgba(176,87,154,.28);padding:5px 12px;
+  color:var(--pm);z-index:6;
+  background:rgba(255,255,255,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  animation:simpleFade 1s var(--ease) .4s both;
+}
+.h-aside{
+  position:absolute;right:28px;top:50%;transform:translateY(-50%);
+  writing-mode:vertical-rl;font-size:.52rem;letter-spacing:.2em;
+  color:rgba(26,8,40,.18);text-transform:uppercase;z-index:6;
+  animation:simpleFade 1.2s var(--ease) .6s both;
+}
+.hero-copy{
+  position:relative;z-index:5;
+  text-align:center;
+  width:100%;max-width:760px;padding:0 28px;
+  animation:heroCopyIn 1.4s var(--ease) .9s both;
+}
+@keyframes heroCopyIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes simpleFade{from{opacity:0}to{opacity:1}}
+
+.hero-title{line-height:1;margin-bottom:20px}
+.ht-eye{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px}
+.ht-eye-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,rgba(176,87,154,.38),transparent)}
+.ht-eye-text{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3)}
+.ht-main{
+  display:block;font-size:clamp(3rem,6.5vw,7rem);
+  font-style:italic;font-weight:400;color:var(--pm);
+  letter-spacing:-.015em;line-height:.94;
+}
+.ht-sub{
+  display:block;font-size:clamp(1.4rem,3vw,3.4rem);
+  font-weight:700;color:var(--ink);
+  letter-spacing:-.028em;line-height:1.08;
+  margin-top:3px;margin-bottom:22px;
+}
+.hero-actions{display:flex;gap:14px;justify-content:center}
+.btn-main{
+  background:var(--pm);color:#fff;border:none;
+  padding:13px 30px;font-size:.82rem;letter-spacing:.07em;text-transform:uppercase;
+  border-radius:2px;transition:background .2s,transform .2s;will-change:transform;
+}
+.btn-main:hover{background:var(--pu)}
+.btn-ghost{
+  background:transparent;color:var(--ink);
+  border:1.5px solid rgba(26,8,40,.22);
+  padding:12px 30px;font-size:.82rem;letter-spacing:.07em;text-transform:uppercase;
+  border-radius:2px;transition:border-color .2s,color .2s;
+}
+.btn-ghost:hover{border-color:var(--pm);color:var(--pm)}
+
+/* ─── MARQUEE ─────────────────────────────────────── */
+.marquee{
+  padding:13px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  overflow:hidden;background:var(--bg2);position:relative;z-index:10;
+}
+.mq-track{
+  display:flex;gap:52px;white-space:nowrap;
+  animation:mqScroll 30s linear infinite;
+}
+.mq-track span{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);flex-shrink:0}
+.mq-track .dot{color:var(--pm);font-size:1rem;line-height:1}
+@keyframes mqScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ─── FEATURES ────────────────────────────────────── */
+.features{
+  padding:120px 48px;
+  background:linear-gradient(158deg,#FAF5FF 0%,#FFF6FA 50%,#F5F0FA 100%);
+  position:relative;overflow:hidden;
+}
+.features::before{
+  content:'';position:absolute;top:-220px;left:50%;transform:translateX(-50%);
+  width:900px;height:900px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,168,216,.15) 0%,transparent 68%);
+  pointer-events:none;
+}
+.feat-hd{text-align:center;margin-bottom:68px}
+.feat-hd h2{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-.025em;line-height:1.1}
+.feat-hd p{font-size:.95rem;color:var(--ink2);max-width:540px;margin:18px auto 0;line-height:1.72}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;max-width:1160px;margin:0 auto}
+.feat-card{
+  padding:38px 34px;position:relative;overflow:hidden;
+  background:rgba(255,255,255,.62);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 4px 28px rgba(120,50,170,.05),inset 0 1px 0 rgba(255,255,255,.96);
+  transition:transform .32s var(--ease),box-shadow .32s var(--ease);
+}
+.feat-card::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.38) 0%,transparent 58%)}
+.feat-card:hover{transform:translateY(-5px);box-shadow:0 14px 48px rgba(120,50,170,.1)}
+.fc-icon{font-size:1.7rem;margin-bottom:18px;display:block}
+.fc-num{position:absolute;top:26px;right:30px;font-size:.6rem;letter-spacing:.15em;color:var(--ink3);text-transform:uppercase}
+.fc-h{font-size:1.1rem;font-weight:700;margin-bottom:11px;color:var(--ink);letter-spacing:-.015em}
+.fc-p{font-size:.86rem;color:var(--ink2);line-height:1.67}
+.fc-tag{display:inline-block;margin-top:18px;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;background:var(--pm2);color:var(--pm);padding:4px 10px;border-radius:2px}
+
+/* ─── QUOTE ──────────────────────────────────────── */
+.q-band{padding:90px 48px;background:var(--ink);text-align:center;position:relative;overflow:hidden}
+.q-band::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;border:1px solid rgba(176,87,154,.18);pointer-events:none}
+.q-text{font-size:clamp(1.45rem,3.2vw,2.7rem);font-style:italic;font-weight:400;color:#FAF8F5;max-width:860px;margin:0 auto;letter-spacing:-.02em;line-height:1.42}
+.q-attr{margin-top:26px;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.42)}
+
+/* ─── EU ACT ──────────────────────────────────────── */
+.eu-act{padding:110px 48px;background:var(--bg)}
+.eu-act-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;max-width:1160px;margin:0 auto}
+.eu-left h2{font-size:clamp(1.8rem,3.4vw,2.9rem);font-weight:700;letter-spacing:-.025em;line-height:1.15;margin-bottom:22px}
+.eu-left p{font-size:.92rem;color:var(--ink2);line-height:1.77;margin-bottom:14px}
+.eu-right{display:flex;flex-direction:column;gap:15px}
+.art-card{
+  padding:22px 26px;border-left:3px solid var(--pm);
+  background:rgba(255,255,255,.68);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.92);
+  border-right:1px solid rgba(255,255,255,.92);
+  border-bottom:1px solid rgba(255,255,255,.92);
+  transition:transform .25s var(--ease);
+}
+.art-card:hover{transform:translateX(4px)}
+.art-num{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--pm);margin-bottom:7px}
+.art-h{font-size:.93rem;font-weight:700;color:var(--ink);margin-bottom:5px}
+.art-p{font-size:.8rem;color:var(--ink2);line-height:1.62}
+
+/* ─── PASSPORT ────────────────────────────────────── */
+.passport-band{padding:110px 48px;background:var(--ink);overflow:hidden}
+.pp-inner{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.pp-text h2{font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;letter-spacing:-.025em;color:#FAF8F5;margin-bottom:16px}
+.pp-text p{font-size:.88rem;color:rgba(250,248,245,.55);line-height:1.75}
+.pp-text .btn-main{margin-top:28px;display:inline-block}
+.passport-card{perspective:900px}
+.pp-face{
+  width:100%;aspect-ratio:1.586;
+  background:linear-gradient(135deg,#2A0E40 0%,#1A0828 58%,#3A1258 100%);
+  border:1px solid rgba(176,87,154,.28);
+  padding:30px;
+  transform-style:preserve-3d;
+  transition:transform .15s ease;
+  position:relative;overflow:hidden;
+}
+.pp-face::before{content:'';position:absolute;top:-60%;right:-30%;width:200%;height:200%;border-radius:50%;background:radial-gradient(circle,rgba(176,87,154,.14) 0%,transparent 62%);pointer-events:none}
+.pp-logo-big{font-size:2.4rem;font-weight:700;color:rgba(250,248,245,.9);letter-spacing:.04em}
+.pp-label{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.42);margin-bottom:3px;margin-top:14px}
+.pp-val{font-size:.82rem;color:rgba(250,248,245,.85)}
+.pp-stamp{
+  position:absolute;bottom:22px;right:22px;width:54px;height:54px;
+  border-radius:50%;border:2px solid rgba(196,148,58,.45);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(196,148,58,.65);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;
+}
+
+/* ─── REGISTER ────────────────────────────────────── */
+.register{padding:110px 48px;background:linear-gradient(160deg,#F5EEFA 0%,#FFF0F5 100%)}
+.reg-inner{max-width:880px;margin:0 auto}
+.reg-inner h2{font-size:clamp(1.8rem,3.4vw,3rem);font-weight:700;letter-spacing:-.025em;margin-bottom:14px}
+.reg-inner .sub{font-size:.92rem;color:var(--ink2);margin-bottom:44px;line-height:1.65}
+.tally-wrap{
+  background:rgba(255,255,255,.62);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,.9);
+  padding:38px;box-shadow:0 4px 24px rgba(120,50,170,.05);
+}
+
+/* ─── CHATBOT ─────────────────────────────────────── */
+#chatBot{position:fixed;bottom:30px;right:30px;z-index:800}
+.cb-bubble{
+  width:50px;height:50px;border-radius:50%;
+  background:var(--pm);border:none;color:#fff;
+  font-size:1.3rem;box-shadow:0 4px 20px rgba(176,87,154,.38);
+  transition:transform .2s;display:flex;align-items:center;justify-content:center;
+}
+.cb-bubble:hover{transform:scale(1.08)}
+.cb-win{
+  display:none;width:310px;
+  background:rgba(250,248,245,.97);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 16px 60px rgba(26,8,40,.16);
+  margin-bottom:10px;overflow:hidden;
+}
+.cb-win.open{display:block}
+.cb-head{background:var(--pm);color:#fff;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
+.cb-head h3{font-size:.83rem;font-weight:700}
+.cb-close{background:none;border:none;color:#fff;font-size:1.2rem;line-height:1}
+.cb-msgs{height:230px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px}
+.msg-bot{max-width:88%;font-size:.8rem;line-height:1.52;padding:7px 11px;background:rgba(176,87,154,.1);border-radius:0 11px 11px 11px;color:var(--ink)}
+.msg-usr{max-width:88%;font-size:.8rem;line-height:1.52;padding:7px 11px;background:var(--pm);color:#fff;border-radius:11px 11px 0 11px;margin-left:auto}
+.cb-input{display:flex;border-top:1px solid var(--rule)}
+.cb-input input{flex:1;border:none;padding:11px 13px;background:transparent;font-size:.8rem;font-family:var(--f);color:var(--ink)}
+.cb-input input:focus{outline:none}
+.cb-input button{background:var(--pm);color:#fff;border:none;padding:0 15px;font-size:.9rem}
+
+/* ─── INNER PAGES ─────────────────────────────────── */
+.page{display:none;min-height:100svh;padding:110px 48px 80px;background:var(--bg)}
+.page.active{display:block}
+.page-head{margin-bottom:44px}
+.page-head h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.025em}
+.page-head p{font-size:.92rem;color:var(--ink2);margin-top:10px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.data-card{
+  padding:26px 22px;
+  background:rgba(255,255,255,.7);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 2px 12px rgba(120,50,170,.03);
+}
+.dc-label{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:7px}
+.dc-val{font-size:1.05rem;font-weight:700;color:var(--ink)}
+.dc-sub{font-size:.76rem;color:var(--ink2);margin-top:3px}
+.conflict-item{padding:18px 22px;border-left:3px solid #E07070;background:rgba(224,112,112,.05);margin-bottom:10px}
+.ci-ttl{font-size:.9rem;font-weight:700;margin-bottom:5px}
+.ci-sub{font-size:.76rem;color:var(--ink2)}
+.rights-block{padding:30px;background:rgba(255,255,255,.65);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.9);margin-bottom:18px}
+.rb-num{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--pm);margin-bottom:7px}
+.rb-h{font-size:.98rem;font-weight:700;margin-bottom:7px}
+.rb-p{font-size:.83rem;color:var(--ink2);line-height:1.66}
+.back-btn{background:none;border:none;color:var(--pm);font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;padding:0;margin-bottom:30px;display:flex;align-items:center;gap:5px}
+.dash-tabs{display:flex;border-bottom:1px solid var(--rule);margin-bottom:38px;overflow-x:auto}
+.dt{background:none;border:none;padding:11px 22px;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);border-bottom:2px solid transparent;white-space:nowrap}
+.dt.active{color:var(--pm);border-bottom-color:var(--pm)}
+
+/* ─── AUTH MODAL ──────────────────────────────────── */
+.modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(26,8,40,.58);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{
+  background:rgba(250,248,245,.98);backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.92);
+  width:min(420px,90vw);padding:44px 38px;
+  box-shadow:0 32px 80px rgba(26,8,40,.18);position:relative;
+}
+.modal-box h2{font-size:1.45rem;font-weight:700;margin-bottom:7px;letter-spacing:-.02em}
+.modal-box .sub{font-size:.85rem;color:var(--ink2);margin-bottom:28px}
+.close-modal{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.4rem;color:var(--ink3)}
+.form-grp{margin-bottom:18px}
+.form-grp label{display:block;font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink2);margin-bottom:7px}
+.form-grp input,.form-grp select{
+  width:100%;border:1.5px solid rgba(26,8,40,.14);padding:10px 13px;
+  font-size:.86rem;font-family:var(--f);background:rgba(255,255,255,.7);color:var(--ink);
+  outline:none;transition:border-color .2s;
+}
+.form-grp input:focus,.form-grp select:focus{border-color:var(--pm)}
+.form-sub{width:100%;padding:12px;background:var(--pm);color:#fff;border:none;font-size:.85rem;letter-spacing:.07em;text-transform:uppercase;margin-top:6px;transition:background .2s}
+.form-sub:hover{background:var(--pu)}
+.form-sub:disabled{background:rgba(176,87,154,.45);cursor:not-allowed}
+.auth-err{color:#C04040;font-size:.78rem;margin-top:7px;display:none;line-height:1.5}
+.form-switch{margin-top:18px;font-size:.8rem;text-align:center;color:var(--ink2)}
+.form-switch button{background:none;border:none;color:var(--pm);font-size:.8rem}
+
+/* ─── FOOTER ──────────────────────────────────────── */
+footer{
+  padding:56px 48px;background:var(--ink);color:rgba(250,248,245,.45);
+  display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;
+}
+footer p{font-size:.78rem;letter-spacing:.04em}
+.foot-th{font-style:italic;color:rgba(250,248,245,.28);font-size:.73rem}
+
+/* ─── REVEAL ──────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .72s var(--ease),transform .72s var(--ease)}
+.reveal.in-view{opacity:1;transform:none}
+
+/* ─── RESPONSIVE ──────────────────────────────────── */
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .nav-links{display:none}
+  .features,.eu-act,.register,.passport-band{padding:80px 20px}
+  .eu-act-inner,.pp-inner{grid-template-columns:1fr;gap:36px}
+  .lotus-stage{width:min(58vmin,340px);height:min(58vmin,340px)}
+  .ht-main{font-size:clamp(2.4rem,8vw,4.5rem)}
+  .ht-sub{font-size:clamp(1.1rem,4vw,2rem)}
+  .hero{gap:14px;padding:70px 0 36px}
+  .eu-badge,.h-aside,.hero-label{display:none}
+}
+</style>
+</head>
+<body>
+<a class="sr-only" href="#main-content">Skip to content</a>
+
+<div id="cur-dot" aria-hidden="true"></div>
+<div id="cur-ring" aria-hidden="true"></div>
+
+<!-- ─── NAV ──────────────────────────────────────── -->
+<nav role="navigation" aria-label="Main navigation">
+  <a href="#" class="nav-logo" onclick="showPage('home');return false">
+    <svg class="logo-icon" viewBox="0 0 34 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <radialGradient id="lg1" cx="50%" cy="80%" r="70%">
+          <stop offset="0%" stop-color="#E0C0F0"/>
+          <stop offset="100%" stop-color="#9870C8"/>
+        </radialGradient>
+        <radialGradient id="lg2" cx="50%" cy="80%" r="70%">
+          <stop offset="0%" stop-color="#F4C4D8"/>
+          <stop offset="100%" stop-color="#C06898"/>
+        </radialGradient>
+      </defs>
+      <path d="M 17,26 C 10,23 8,14 17,6 C 26,14 24,23 17,26 Z" fill="url(#lg1)"/>
+      <path d="M 17,26 C 6,26 2,16 10,9 C 17,12 20,21 17,26 Z" fill="url(#lg2)" opacity=".72"/>
+      <path d="M 17,26 C 28,26 32,16 24,9 C 17,12 14,21 17,26 Z" fill="url(#lg2)" opacity=".72"/>
+      <ellipse cx="17" cy="27" rx="6.5" ry="1.8" fill="#C4943A" opacity=".5"/>
+      <circle cx="17" cy="17" r="2.8" fill="rgba(255,255,255,.38)"/>
+    </svg>
+    <div class="logo-wordmark">
+      <span class="logo-text">SIP</span>
+      <span class="logo-sub">Style Identity Platform</span>
+    </div>
+  </a>
+  <ul class="nav-links" role="list">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#eu-act">EU AI Act</a></li>
+    <li><a href="#register">Join</a></li>
+  </ul>
+  <button class="nav-cta" onclick="openModal('login')" aria-label="Log in">Log In</button>
+</nav>
+
+<main id="main-content">
+<div id="page-home" style="display:block">
+
+<!-- HERO -->
+<section class="hero" aria-label="Hero">
+  <div class="lotus-stage" aria-hidden="true">
+    <svg id="lotusSvg" viewBox="-460 -460 920 920" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="paint" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="7" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+          <feGaussianBlur in="displaced" stdDeviation="1.5" result="blurred"/>
+          <feComposite in="blurred" in2="SourceGraphic" operator="over"/>
+        </filter>
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="14" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+        </filter>
+        <radialGradient id="gLav" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
+          <stop offset="0%" stop-color="#EDE0F8"/><stop offset="55%" stop-color="#C8A8D8"/><stop offset="100%" stop-color="#A070B8" stop-opacity=".55"/>
+        </radialGradient>
+        <radialGradient id="gRose" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
+          <stop offset="0%" stop-color="#FDDDE8"/><stop offset="55%" stop-color="#F0B8CC"/><stop offset="100%" stop-color="#D080A0" stop-opacity=".55"/>
+        </radialGradient>
+        <radialGradient id="gPeach" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
+          <stop offset="0%" stop-color="#FEF0E4"/><stop offset="52%" stop-color="#F4C4A4"/><stop offset="100%" stop-color="#D89070" stop-opacity=".5"/>
+        </radialGradient>
+        <radialGradient id="gLilac" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
+          <stop offset="0%" stop-color="#F0DCFC"/><stop offset="55%" stop-color="#D4A8EC"/><stop offset="100%" stop-color="#A868D0" stop-opacity=".55"/>
+        </radialGradient>
+        <radialGradient id="gViolet" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
+          <stop offset="0%" stop-color="#DEC4F0"/><stop offset="52%" stop-color="#A880D4"/><stop offset="100%" stop-color="#7040A8" stop-opacity=".6"/>
+        </radialGradient>
+        <radialGradient id="gDeep" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
+          <stop offset="0%" stop-color="#C8A0E0"/><stop offset="52%" stop-color="#8848A8"/><stop offset="100%" stop-color="#4A2070" stop-opacity=".65"/>
+        </radialGradient>
+        <radialGradient id="gGold" cx="50%" cy="50%" r="80%">
+          <stop offset="0%" stop-color="#FFF8C0"/><stop offset="45%" stop-color="#ECC860"/><stop offset="100%" stop-color="#B88020"/>
+        </radialGradient>
+        <radialGradient id="gGoldGlow" cx="50%" cy="50%" r="80%">
+          <stop offset="0%" stop-color="#FFFBE8" stop-opacity=".9"/><stop offset="100%" stop-color="#F0D060" stop-opacity="0"/>
+        </radialGradient>
+        <pattern id="sheen" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="3" fill="rgba(255,255,255,.2)"/>
+          <circle cx="0" cy="0" r="1.8" fill="rgba(255,255,255,.12)"/>
+          <circle cx="20" cy="20" r="1.8" fill="rgba(255,255,255,.12)"/>
+        </pattern>
+        <path id="pO" d="M 0,18 C -58,-30 -68,-200 -28,-352 Q 0,-404 28,-352 C 68,-200 58,-30 0,18 Z"/>
+        <path id="pM" d="M 0,14 C -42,-22 -50,-148 -20,-260 Q 0,-300 20,-260 C 50,-148 42,-22 0,14 Z"/>
+        <path id="pI" d="M 0,10 C -30,-16 -35,-105 -14,-186 Q 0,-216 14,-186 C 35,-105 30,-16 0,10 Z"/>
+        <path id="pC" d="M 0,7 C -20,-11 -22,-72 -9,-124 Q 0,-144 9,-124 C 22,-72 20,-11 0,7 Z"/>
+      </defs>
+      <g id="lotusRoot" filter="url(#paint)">
+        <g id="lL1" class="play"></g>
+        <g id="lL2" class="play"></g>
+        <g id="lL3" class="play"></g>
+        <g id="lL4" class="play"></g>
+        <g id="lL5" class="play"></g>
+        <g id="lL6" class="play"></g>
+      </g>
+      <g id="lotusCenter" class="play" filter="url(#glow)">
+        <circle cx="0" cy="0" r="62" fill="url(#gGoldGlow)" opacity=".8"/>
+        <circle cx="0" cy="0" r="52" fill="url(#gGold)" opacity=".92"/>
+        <circle cx="0" cy="0" r="36" fill="#F8F0B0" opacity=".9"/>
+        <circle cx="0" cy="0" r="22" fill="#FFFBE8" opacity=".98"/>
+        <g stroke="rgba(160,100,20,.5)" stroke-width="1.1">
+          <line x1="0" y1="-26" x2="0" y2="-58"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(24)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(48)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(72)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(96)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(120)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(144)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(168)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(192)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(216)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(240)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(264)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(288)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(312)"/>
+          <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(336)"/>
+        </g>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(24)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(48)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(72)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(96)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(120)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(144)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(168)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(192)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(216)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(240)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(264)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(288)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(312)"/>
+        <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(336)"/>
+        <circle cx="0" cy="0" r="9" fill="#C4943A"/>
+        <circle cx="0" cy="0" r="5" fill="#FFFBE8"/>
+      </g>
+    </svg>
+  </div>
+
+  <div id="pollenBox" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3"></div>
+
+  <p class="hero-label" aria-hidden="true">Cholponai Kalybaeva &nbsp;·&nbsp; Macromedia University, Berlin &nbsp;·&nbsp; 2026</p>
+  <div class="eu-badge" aria-label="EU AI Act Compliant">✦ EU AI Act Compliant</div>
+  <p class="h-aside" aria-hidden="true">Style &middot; Identity &middot; AI Rights</p>
+
+  <div class="hero-copy">
+    <div class="hero-title" role="heading" aria-level="1" aria-label="Style Is Identity, Not Property.">
+      <div class="ht-eye" aria-hidden="true">
+        <span class="ht-eye-line"></span>
+        <span class="ht-eye-text">Style Is</span>
+        <span class="ht-eye-line"></span>
+      </div>
+      <span class="ht-main" aria-hidden="true">Identity,</span>
+      <span class="ht-sub" aria-hidden="true">Not Property.</span>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-main" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">Claim Your Passport</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore →</button>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="mq-track">
+    <span>Style Is Identity</span><span class="dot">✦</span>
+    <span>EU AI Act 2024</span><span class="dot">✦</span>
+    <span>Art. 53 Opt-Out</span><span class="dot">✦</span>
+    <span>Style Passport</span><span class="dot">✦</span>
+    <span>Illustrator Rights</span><span class="dot">✦</span>
+    <span>Not Property</span><span class="dot">✦</span>
+    <span>Berlin 2026</span><span class="dot">✦</span>
+    <span>Macromedia University</span><span class="dot">✦</span>
+    <span>Style Is Identity</span><span class="dot">✦</span>
+    <span>EU AI Act 2024</span><span class="dot">✦</span>
+    <span>Art. 53 Opt-Out</span><span class="dot">✦</span>
+    <span>Style Passport</span><span class="dot">✦</span>
+    <span>Illustrator Rights</span><span class="dot">✦</span>
+    <span>Not Property</span><span class="dot">✦</span>
+    <span>Berlin 2026</span><span class="dot">✦</span>
+    <span>Macromedia University</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="features" aria-labelledby="feat-title">
+  <div class="feat-hd reveal">
+    <h2 id="feat-title">Tools Built for Your Rights</h2>
+    <p>Three interconnected systems that document your creative identity, detect unauthorized AI use, and give you the legal framework to act.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal">
+      <span class="fc-icon">🛂</span><span class="fc-num">01</span>
+      <h3 class="fc-h">Style Passport</h3>
+      <p class="fc-p">A verified record of your artistic fingerprint — color palettes, linework patterns, compositional habits. Timestamped and immutable.</p>
+      <span class="fc-tag">Documentation</span>
+    </div>
+    <div class="feat-card reveal" style="transition-delay:.09s">
+      <span class="fc-icon">🔍</span><span class="fc-num">02</span>
+      <h3 class="fc-h">AI Detection</h3>
+      <p class="fc-p">Upload any AI-generated image to detect stylistic overlap with your documented work. Powered by EU-compliant analysis.</p>
+      <span class="fc-tag">Detection</span>
+    </div>
+    <div class="feat-card reveal" style="transition-delay:.18s">
+      <span class="fc-icon">⚖️</span><span class="fc-num">03</span>
+      <h3 class="fc-h">Opt-Out Rights</h3>
+      <p class="fc-p">Generate legally compliant opt-out requests under Article 53 of the EU AI Act, directly addressed to AI developers.</p>
+      <span class="fc-tag">Legal Action</span>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<div class="q-band">
+  <p class="q-text reveal">"An illustrator's style is not merely aesthetic preference — it is the accumulation of years of craft, the signature of a creative life."</p>
+  <p class="q-attr reveal" style="transition-delay:.1s">Cholponai Kalybaeva · Bachelor Thesis 2026 · Macromedia University, Berlin</p>
+</div>
+
+<!-- EU ACT -->
+<section id="eu-act" class="eu-act" aria-labelledby="eu-title">
+  <div class="eu-act-inner">
+    <div class="eu-left reveal">
+      <h2 id="eu-title">The EU AI Act Protects Creators</h2>
+      <p>The EU AI Act (2024) establishes the world's first comprehensive legal framework for artificial intelligence. For illustrators, it is the most significant legal protection in the history of digital art.</p>
+      <p>SIP translates complex legal language into tools you can actually use — because understanding your rights shouldn't require a law degree.</p>
+    </div>
+    <div class="eu-right">
+      <div class="art-card reveal">
+        <p class="art-num">Article 53</p>
+        <h3 class="art-h">Opt-Out from Training Data</h3>
+        <p class="art-p">Creators may formally request exclusion of their work from AI training datasets. SIP automates this process.</p>
+      </div>
+      <div class="art-card reveal" style="transition-delay:.1s">
+        <p class="art-num">Article 13</p>
+        <h3 class="art-h">Transparency Requirements</h3>
+        <p class="art-p">AI systems must disclose when and how creative works were used. SIP logs and tracks these disclosures.</p>
+      </div>
+      <div class="art-card reveal" style="transition-delay:.2s">
+        <p class="art-num">Article 86</p>
+        <h3 class="art-h">Right to Explanation</h3>
+        <p class="art-p">You have the right to understand how AI decisions affecting your work were made. SIP surfaces these explanations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PASSPORT BAND -->
+<section class="passport-band" aria-labelledby="pp-title">
+  <div class="pp-inner">
+    <div class="pp-text reveal">
+      <h2 id="pp-title">Your Style,<br>Officially Documented</h2>
+      <p>The Style Passport is a living document that captures the unique elements of your visual identity. It evolves as you create — and stands as legal evidence if your style is ever copied.</p>
+      <button class="btn-main" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">Get Your Passport</button>
+    </div>
+    <div class="passport-card reveal" style="transition-delay:.12s" id="passportCard">
+      <div class="pp-face" id="ppFace">
+        <div class="pp-logo-big">SIP</div>
+        <div class="pp-label">Style Passport</div>
+        <div class="pp-val" id="ppName">— Register to activate —</div>
+        <div class="pp-label" style="margin-top:10px">Specialization</div>
+        <div class="pp-val" id="ppSpec">—</div>
+        <div class="pp-label" style="margin-top:10px">Issued</div>
+        <div class="pp-val">2026 · Berlin · EU</div>
+        <div class="pp-stamp">EU AI<br>Act<br>Art.53</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTER -->
+<section id="register" class="register" aria-labelledby="reg-title">
+  <div class="reg-inner">
+    <h2 id="reg-title" class="reveal">Join the Platform</h2>
+    <p class="sub reveal" style="transition-delay:.08s">Register as an illustrator to claim your Style Passport, log conflicts, and access your rights under the EU AI Act. After submitting, log in with your email to access your dashboard.</p>
+    <div class="tally-wrap reveal" style="transition-delay:.18s">
+      <iframe src="https://tally.so/embed/MePZDl?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+        loading="lazy" width="100%" height="700" frameborder="0"
+        title="Registration form" style="display:block;border:none;"></iframe>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Cholponai Kalybaeva — Macromedia University of Applied Sciences, Berlin</p>
+  <p class="foot-th">"Style Is Identity, Not Property"</p>
+</footer>
+
+</div><!-- /page-home -->
+
+<!-- ─── DASHBOARD PAGE ─────────────────────────── -->
+<div id="page-dashboard" class="page">
+  <button class="back-btn" onclick="showPage('home')">← Back to home</button>
+  <div class="page-head">
+    <h1>Dashboard</h1>
+    <p id="dash-welcome">Welcome back.</p>
+  </div>
+  <div class="dash-tabs" role="tablist">
+    <button class="dt active" onclick="showTab('overview')" role="tab">Overview</button>
+    <button class="dt" onclick="showTab('portfolio')" role="tab">Portfolio</button>
+    <button class="dt" onclick="showTab('conflicts')" role="tab">Conflicts</button>
+    <button class="dt" onclick="showTab('rights')" role="tab">Rights</button>
+  </div>
+  <div id="tab-overview"><div class="grid-3" id="dashStats"></div></div>
+  <div id="tab-portfolio" style="display:none"><div class="grid-4" id="portfolioGrid"></div></div>
+  <div id="tab-conflicts" style="display:none"><div id="conflictsGrid"></div></div>
+  <div id="tab-rights" style="display:none"><div id="rightsContent"></div></div>
+</div>
+
+</main>
+
+<!-- ─── AUTH MODAL ────────────────────────────── -->
+<div id="authModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal()" aria-label="Close">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ─── CHATBOT ───────────────────────────────── -->
+<div id="chatBot" role="complementary" aria-label="SIP Assistant">
+  <div class="cb-win" id="cbWin" aria-live="polite">
+    <div class="cb-head">
+      <h3>✦ SIP Assistant</h3>
+      <button class="cb-close" onclick="toggleChat()" aria-label="Close chat">×</button>
+    </div>
+    <div class="cb-msgs" id="cbMsgs">
+      <div class="msg-bot">Hi! I'm your SIP guide. Ask me anything about illustrator rights, the EU AI Act, or the platform.</div>
+    </div>
+    <div class="cb-input">
+      <input id="cbIn" type="text" placeholder="Ask a question…" aria-label="Chat message" onkeydown="if(event.key==='Enter')cbSend()">
+      <button onclick="cbSend()" aria-label="Send">→</button>
+    </div>
+  </div>
+  <button class="cb-bubble" onclick="toggleChat()" aria-label="Open SIP Assistant">✦</button>
+</div>
+
+<script>
+// ─── AIRTABLE CONFIG ───────────────────────────
+const KEY  = 'pat7xOTmWRbiw6LII.08c3a8b76fe11cd47802b3728a141fd9b3d4036cab77d7cfe20dc869b2039eaa';
+const BASE = 'appmpPaevLqV2UAoG';
+const TABLE = 'Illustrators'; // ← must match your Airtable table name EXACTLY
+
+let user = null;
+
+async function at(table, params = '') {
+  const r = await fetch(
+    `https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}${params}`,
+    { headers: { Authorization: 'Bearer ' + KEY } }
+  );
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+// Find illustrator by email using Airtable filterByFormula
+async function findByEmail(email) {
+  const formula = encodeURIComponent(`{Email}="${email}"`);
+  const data = await at(TABLE, `?filterByFormula=${formula}&maxRecords=1`);
+  return data.records?.[0] || null;
+}
+
+// ─── CURSOR ───────────────────────────────────
+(function(){
+  const dot = document.getElementById('cur-dot');
+  const ring = document.getElementById('cur-ring');
+  let rx = 0, ry = 0, dx = 0, dy = 0;
+  document.addEventListener('mousemove', e => {
+    dx = e.clientX; dy = e.clientY;
+    dot.style.left = dx + 'px'; dot.style.top = dy + 'px';
+  });
+  (function loop(){
+    rx += (dx - rx) * .11; ry += (dy - ry) * .11;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button,input,select,iframe').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width = '54px'; ring.style.height = '54px'; ring.style.opacity = '.38'; });
+    el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '1'; });
+  });
+})();
+
+// ─── LOTUS BUILDER ───────────────────────────
+(function buildLotus(){
+  const NS = 'http://www.w3.org/2000/svg';
+  function mk(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    return e;
+  }
+  const LAYERS = [
+    ['lL1','#pO','url(#gLav)',   .70, 14,  0,  .24, 'osc-a'],
+    ['lL2','#pO','url(#gRose)',  .74, 12, 13,  .22, 'osc-b'],
+    ['lL3','#pM','url(#gPeach)', .78, 10,  7,  .19, 'osc-c'],
+    ['lL4','#pM','url(#gLilac)', .82,  9, 20,  .17, 'osc-d'],
+    ['lL5','#pI','url(#gViolet)',.86,  7,  4,  .14, 'osc-e'],
+    ['lL6','#pC','url(#gDeep)',  .90,  5, 16,  .11, 'osc-b'],
+  ];
+  LAYERS.forEach(([gId, pHref, fill, opacity, count, rotOff, sheenOp, oscCls]) => {
+    const g = document.getElementById(gId);
+    if (!g) return;
+    for (let i = 0; i < count; i++) {
+      const angle = (360 / count) * i + rotOff;
+      const tfm = `transform-box:fill-box;transform-origin:50% 100%;transform:rotate(${angle}deg)`;
+      const pFill = mk('use', { href: pHref, fill, opacity: String(opacity) });
+      pFill.style.cssText = tfm;
+      const pSheen = mk('use', { href: pHref, fill: 'url(#sheen)', opacity: String(sheenOp) });
+      pSheen.style.cssText = tfm;
+      g.appendChild(pFill);
+      g.appendChild(pSheen);
+    }
+    g._oscClass = oscCls;
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const layers = document.querySelectorAll('.play');
+    layers.forEach((g, i) => { g.style.transitionDelay = `${i * 0.2}s`; g.classList.add('show'); });
+    const totalBloom = (layers.length * 0.2 + 1.5) * 1000;
+    setTimeout(() => {
+      layers.forEach(g => { g.style.transitionDelay = '0s'; if (g._oscClass) g.classList.add(g._oscClass); });
+    }, totalBloom);
+  }));
+})();
+
+// ─── POLLEN ───────────────────────────────────
+(function(){
+  const box = document.getElementById('pollenBox');
+  const colors = ['#C8A8D8','#F0B8C8','#ECCF70','#D4A8EC','#F4C4A8','#E8B8D4'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'pollen';
+    const sz = 3 + Math.random() * 5.5;
+    p.style.cssText = `width:${sz}px;height:${sz}px;left:${18+Math.random()*64}%;top:${22+Math.random()*56}%;background:${colors[i%colors.length]};--dur:${5+Math.random()*7}s;--del:${Math.random()*9}s;--rx:${(Math.random()-.5)*130}px;--ry:${-(90+Math.random()*180)}px;`;
+    box.appendChild(p);
+  }
+})();
+
+// ─── PARALLAX ─────────────────────────────────
+document.addEventListener('mousemove', e => {
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+  const fx = (e.clientX - cx) / cx, fy = (e.clientY - cy) / cy;
+  const svg = document.getElementById('lotusSvg');
+  if (svg) svg.style.transform = `translate(${fx*14}px,${fy*9}px)`;
+});
+
+// ─── PASSPORT TILT ────────────────────────────
+const ppCard = document.getElementById('passportCard');
+const ppFace = document.getElementById('ppFace');
+if (ppCard && ppFace) {
+  ppCard.addEventListener('mousemove', e => {
+    const r = ppCard.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    ppFace.style.transform = `rotateY(${x*20}deg) rotateX(${-y*14}deg)`;
+  });
+  ppCard.addEventListener('mouseleave', () => { ppFace.style.transform = ''; });
+}
+
+// ─── MAGNETIC BUTTONS ─────────────────────────
+document.querySelectorAll('.btn-main,.btn-ghost').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    btn.style.transform = `translate(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.16}px)`;
+  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+});
+
+// ─── SCROLL REVEAL ────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ─── ROUTING ──────────────────────────────────
+function showPage(id) {
+  const home = document.getElementById('page-home');
+  const dash = document.getElementById('page-dashboard');
+  if (id === 'dashboard') {
+    home.style.display = 'none';
+    dash.classList.add('active');
+    loadDashboard();
+  } else {
+    home.style.display = 'block';
+    dash.classList.remove('active');
+  }
+  window.scrollTo(0, 0);
+}
+
+function showTab(tab) {
+  ['overview','portfolio','conflicts','rights'].forEach(t => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.dt').forEach((b, i) => {
+    b.classList.toggle('active', ['overview','portfolio','conflicts','rights'][i] === tab);
+  });
+}
+
+// ─── AUTH MODAL ────────────────────────────────
+function openModal(mode) {
+  document.getElementById('modalContent').innerHTML = mode === 'login' ? loginHTML() : registerHTML();
+  document.getElementById('authModal').classList.add('open');
+}
+function closeModal() { document.getElementById('authModal').classList.remove('open'); }
+document.getElementById('authModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+function loginHTML() { return `
+  <h2 id="modalTitle">Welcome Back</h2>
+  <p class="sub">Enter the email you registered with to access your Style Passport.</p>
+  <div class="form-grp">
+    <label for="li-e">Email</label>
+    <input id="li-e" type="email" placeholder="you@studio.com" onkeydown="if(event.key==='Enter')doLogin()">
+  </div>
+  <p class="auth-err" id="li-err"></p>
+  <button class="form-sub" id="li-btn" onclick="doLogin()">Access My Passport</button>
+  <div class="form-switch">Not registered yet? <button onclick="closeModal();document.getElementById('register').scrollIntoView({behavior:'smooth'})">Register here →</button></div>
+`; }
+
+function registerHTML() { return `
+  <h2 id="modalTitle">Claim Your Passport</h2>
+  <p class="sub">Fill in the registration form below to create your Style Identity Passport.</p>
+  <div style="text-align:center;padding:16px 0 8px">
+    <button class="form-sub" onclick="closeModal();document.getElementById('register').scrollIntoView({behavior:'smooth'})">Go to Registration Form ↓</button>
+  </div>
+  <div class="form-switch">Already registered? <button onclick="openModal('login')">Sign in with email</button></div>
+`; }
+
+// ─── LOGIN — real Airtable lookup ─────────────
+async function doLogin() {
+  const emailInput = document.getElementById('li-e');
+  const errEl = document.getElementById('li-err');
+  const btn = document.getElementById('li-btn');
+  const email = emailInput.value.trim().toLowerCase();
+
+  errEl.style.display = 'none';
+  if (!email || !email.includes('@')) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = 'Looking up…';
+  btn.disabled = true;
+
+  try {
+    const record = await findByEmail(email);
+    if (!record) {
+      errEl.textContent = 'No registration found for this email. Please fill in the registration form first — it takes a few minutes to process.';
+      errEl.style.display = 'block';
+      btn.textContent = 'Access My Passport';
+      btn.disabled = false;
+      return;
+    }
+    const f = record.fields;
+    user = {
+      name: f.Name || email.split('@')[0],
+      email: f.Email || email,
+      spec: f.Spec || f.Specialization || 'Illustrator',
+      style: f.Style || f.StyleDescription || '',
+      portfolio: f.Portfolio || f.PortfolioURL || '',
+      passportId: f.PassportID || '—',
+      registered: f.Registered || f.RegistrationDate || new Date().toLocaleDateString('en-GB'),
+    };
+    closeModal();
+    updateNav();
+    showPage('dashboard');
+  } catch (err) {
+    errEl.textContent = 'Connection error. Please try again.';
+    errEl.style.display = 'block';
+    console.error(err);
+  }
+
+  btn.textContent = 'Access My Passport';
+  btn.disabled = false;
+}
+
+function updateNav() {
+  if (!user) return;
+  const cta = document.querySelector('.nav-cta');
+  if (cta) { cta.textContent = user.name.split(' ')[0]; cta.onclick = () => showPage('dashboard'); }
+  const pn = document.getElementById('ppName');
+  const ps = document.getElementById('ppSpec');
+  if (pn) pn.textContent = user.name;
+  if (ps) ps.textContent = user.spec;
+  const dw = document.getElementById('dash-welcome');
+  if (dw) dw.textContent = `Welcome back, ${user.name.split(' ')[0]}. Your passport is active.`;
+}
+
+// ─── DASHBOARD ────────────────────────────────
+async function loadDashboard() {
+  showTab('overview');
+  const stats = document.getElementById('dashStats');
+  stats.innerHTML = '<p style="color:var(--ink2);font-size:.88rem;padding:20px 0">Loading your data…</p>';
+
+  // Passport card at top
+  const passportOverview = document.createElement('div');
+  passportOverview.id = 'passportOverview';
+  passportOverview.style.cssText = 'margin-bottom:36px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start;max-width:900px';
+  passportOverview.innerHTML = `
+    <div style="width:240px;aspect-ratio:1.586;background:linear-gradient(135deg,#2A0E40,#1A0828,#3A1258);padding:22px;position:relative;overflow:hidden;flex-shrink:0;border:1px solid rgba(176,87,154,.18);">
+      <div style="position:absolute;top:-40%;right:-20%;width:180%;height:180%;border-radius:50%;background:radial-gradient(circle,rgba(176,87,154,.18) 0%,transparent 62%)"></div>
+      <div style="font-size:1.5rem;font-weight:700;color:rgba(250,248,245,.9);letter-spacing:.04em;position:relative">SIP</div>
+      <div style="font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-top:8px;position:relative">Style Passport</div>
+      <div style="font-size:.82rem;color:rgba(250,248,245,.82);margin-top:4px;font-weight:700;position:relative">${user?.name || '—'}</div>
+      <div style="font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-top:10px;position:relative">Specialization</div>
+      <div style="font-size:.72rem;color:rgba(250,248,245,.7);margin-top:2px;position:relative">${user?.spec || '—'}</div>
+      <div style="position:absolute;bottom:12px;right:12px;width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(196,148,58,.4);display:flex;align-items:center;justify-content:center;font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(196,148,58,.6);text-align:center;line-height:1.3">EU AI<br>Act</div>
+    </div>
+    <div>
+      <div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pm);margin-bottom:8px">Passport Status</div>
+      <div style="font-size:1.4rem;font-weight:700;color:var(--ink);margin-bottom:4px">${user?.name || 'Illustrator'}</div>
+      <div style="font-size:.88rem;color:var(--ink2);margin-bottom:6px">${user?.spec || ''}</div>
+      <div style="font-size:.78rem;color:var(--ink2);line-height:1.65;margin-bottom:16px">Your style is documented and protected under the EU AI Act. Use the tabs above to view your details, track conflicts, and generate rights documents.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-main" style="font-size:.72rem;padding:9px 20px" onclick="showTab('rights')">Rights Centre</button>
+        <button class="btn-ghost" style="font-size:.72rem;padding:8px 20px" onclick="showTab('conflicts')">Conflicts</button>
+      </div>
+    </div>
+  `;
+  const tabOverview = document.getElementById('tab-overview');
+  const existing = document.getElementById('passportOverview');
+  if (existing) existing.remove();
+  tabOverview.prepend(passportOverview);
+
+  // Stats cards
+  stats.innerHTML = `
+    <div class="data-card"><p class="dc-label">Passport ID</p><p class="dc-val" style="font-size:.85rem">${user?.passportId || '—'}</p></div>
+    <div class="data-card"><p class="dc-label">Specialization</p><p class="dc-val" style="font-size:.85rem">${user?.spec || '—'}</p></div>
+    <div class="data-card"><p class="dc-label">Registered</p><p class="dc-val" style="font-size:.85rem">${user?.registered || '—'}</p></div>
+    <div class="data-card"><p class="dc-label">EU AI Act Status</p><p class="dc-val" style="font-size:.85rem;color:var(--pm)">Protected</p></div>
+  `;
+
+  // Portfolio tab — show style description + portfolio link
+  document.getElementById('portfolioGrid').innerHTML = `
+    <div class="data-card" style="grid-column:1/-1">
+      <p class="dc-label">Style Description</p>
+      <p class="dc-val" style="font-size:.9rem;font-weight:400;line-height:1.6">${user?.style || 'No style description on file.'}</p>
+    </div>
+    ${user?.portfolio ? `<div class="data-card"><p class="dc-label">Portfolio URL</p><p class="dc-val" style="font-size:.82rem"><a href="${user.portfolio}" target="_blank" style="color:var(--pm)">${user.portfolio}</a></p></div>` : ''}
+  `;
+
+  // Conflicts tab
+  document.getElementById('conflictsGrid').innerHTML = `
+    <div style="padding:20px 0">
+      <p style="color:var(--ink2);font-size:.88rem;margin-bottom:18px">No conflict records on file. If you discover an AI-generated image that mimics your style, document it here.</p>
+      <button class="btn-main" style="font-size:.78rem;padding:10px 22px" onclick="alert('Conflict submission form — connect to your Airtable Conflict Records table via Make.com to enable this.')">Report a Conflict</button>
+    </div>
+  `;
+
+  // Rights tab
+  document.getElementById('rightsContent').innerHTML = `
+    <div class="rights-block">
+      <p class="rb-num">Article 53 — EU AI Act</p>
+      <h3 class="rb-h">Opt-Out from Training Data</h3>
+      <p class="rb-p">Request formal removal of your work from AI training datasets. Reference your Passport ID: <strong>${user?.passportId || '—'}</strong></p>
+      <button class="btn-main" style="margin-top:18px;display:inline-block;font-size:.78rem">Generate Opt-Out Letter</button>
+    </div>
+    <div class="rights-block">
+      <p class="rb-num">Article 13 — EU AI Act</p>
+      <h3 class="rb-h">Transparency Disclosure</h3>
+      <p class="rb-p">Request a disclosure from AI developers about use of your work in their pipeline.</p>
+      <button class="btn-main" style="margin-top:18px;display:inline-block;font-size:.78rem">Request Disclosure</button>
+    </div>
+    <div class="rights-block">
+      <p class="rb-num">Article 86 — EU AI Act</p>
+      <h3 class="rb-h">Right to Explanation</h3>
+      <p class="rb-p">Obtain a human-readable explanation of AI decisions affecting your work.</p>
+      <button class="btn-main" style="margin-top:18px;display:inline-block;font-size:.78rem">Request Explanation</button>
+    </div>
+  `;
+}
+
+// ─── CHATBOT ──────────────────────────────────
+const cbQA = [
+  [/passport|style passport/i,'Your Style Passport documents your unique artistic fingerprint — color palettes, linework, composition. It serves as legal evidence if your style is ever copied by AI.'],
+  [/opt.?out|article 53|training/i,'Under Article 53 of the EU AI Act, you can formally request that AI companies remove your work from training datasets. SIP generates these legally-compliant letters for you.'],
+  [/detect|ai.?generat|check/i,'Upload any AI-generated image to our detection tool. We analyze stylistic fingerprints and flag overlap with your documented portfolio.'],
+  [/eu ai act|law|legal/i,"The EU AI Act (2024) is the world's first comprehensive AI regulation. It grants creators opt-out rights, transparency, and explanation rights."],
+  [/rights|what can i|protection/i,'You have three key rights: (1) Opt-out from AI training (Art. 53), (2) Transparency about usage (Art. 13), (3) Right to explanation (Art. 86).'],
+  [/illustrator|artist|creator/i,'SIP is built for illustrators. Your style is years of craft — not aesthetic preference, but creative identity.'],
+  [/berlin|macromedia|thesis/i,'SIP was developed as a bachelor thesis at Macromedia University of Applied Sciences, Berlin, 2026 by Cholponai Kalybaeva.'],
+  [/register|join|sign up/i,"Scroll down to the registration form — it's free and takes under two minutes. After submitting, log in with your email to access your passport."],
+  [/login|log in|access/i,"Click 'Log In' in the top navigation and enter the email you registered with. Your dashboard loads automatically."],
+  [/hello|hi|hey/i,"Hello! I'm the SIP Assistant. Ask me about your rights as an illustrator, the EU AI Act, or how SIP works."],
+];
+const cbDefault = "Great question. SIP focuses on illustrator rights under the EU AI Act. Could you rephrase that about your style, rights, or the platform?";
+
+function toggleChat() { document.getElementById('cbWin').classList.toggle('open'); }
+function cbSend() {
+  const inp = document.getElementById('cbIn');
+  const msgs = document.getElementById('cbMsgs');
+  const text = inp.value.trim();
+  if (!text) return;
+  msgs.innerHTML += `<div class="msg-usr">${text}</div>`;
+  inp.value = '';
+  const match = cbQA.find(([re]) => re.test(text));
+  setTimeout(() => {
+    msgs.innerHTML += `<div class="msg-bot">${match ? match[1] : cbDefault}</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 380);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
+</body>
+</html>
