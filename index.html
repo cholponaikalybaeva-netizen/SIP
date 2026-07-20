@@ -50,19 +50,23 @@ nav{
 .nav-cta:hover{background:var(--pu)}
 
 /* ─── HERO ───────────────────────────────────────── */
+/* Flex column: lotus on top, text block below — no overlap */
 .hero{
   position:relative;min-height:100svh;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:20px;
-  padding:78px 0 52px;
+  padding:78px 0 52px; /* 78px = nav height + breathing room */
   background:radial-gradient(ellipse 72% 65% at 50% 38%,
     rgba(200,168,216,.22) 0%,rgba(240,184,200,.1) 42%,var(--bg) 100%);
 }
+/* Paper texture overlay */
 .hero::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
   mix-blend-mode:multiply;
 }
+
+/* Lotus container — normal flex item, not absolute */
 .lotus-stage{
   width:min(52vmin,480px);height:min(52vmin,480px);
   display:flex;align-items:center;justify-content:center;
@@ -78,12 +82,16 @@ nav{
   30%{transform:scale(1.014) rotate(.4deg)}
   65%{transform:scale(1.008) rotate(-.32deg)}
 }
+
+/* Petal layer base state — revealed via JS */
 .play{
   transform-box:fill-box;transform-origin:center center;
   opacity:0;transform:scale(.15);
   transition:opacity 1.4s var(--ease),transform 1.4s var(--ease);
 }
 .play.show{opacity:1;transform:scale(1)}
+
+/* Oscillation per layer after bloom */
 .osc-a{animation:oscA 13s ease-in-out infinite}
 .osc-b{animation:oscB 15s ease-in-out .7s infinite}
 .osc-c{animation:oscC 11s ease-in-out 1.2s infinite}
@@ -93,7 +101,11 @@ nav{
 @keyframes oscB{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.005) rotate(-.2deg)}}
 @keyframes oscC{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.009) rotate(.18deg)}}
 @keyframes oscD{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.011) rotate(-.28deg)}}
+
+/* Center glow pulse */
 @keyframes glowPulse{0%,100%{opacity:.9;r:52}50%{opacity:1;r:56}}
+
+/* Pollen */
 .pollen{
   position:absolute;border-radius:50%;pointer-events:none;z-index:3;
   animation:pollenRise var(--dur,7s) ease-in-out var(--del,0s) infinite;opacity:0;
@@ -105,51 +117,85 @@ nav{
   100%{transform:translateY(var(--ry,-160px)) translateX(var(--rx,35px)) scale(.35);opacity:0}
 }
 
+/* ─── HERO TEXT LAYOUT — poster composition ─────── */
+/* Lotus is the illustration; text is the caption beneath it */
+
+/* Small label above, centered */
 .hero-label{
   position:absolute;top:96px;left:50%;transform:translateX(-50%);
   font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
   color:var(--ink3);white-space:nowrap;z-index:6;
   animation:fadeSlideUp 1.2s var(--ease) .3s both;
 }
+/* EU compliance badge — top right */
 .eu-badge{
   position:absolute;top:88px;right:48px;
   font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
   border:1px solid rgba(176,87,154,.28);padding:5px 12px;
   color:var(--pm);z-index:6;
   background:rgba(255,255,255,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  animation:simpleFade 1s var(--ease) .4s both;
+  animation:fadeSlideUp 1.2s var(--ease) .4s both;
 }
+/* Vertical aside — right edge */
 .h-aside{
   position:absolute;right:28px;top:50%;transform:translateY(-50%);
   writing-mode:vertical-rl;font-size:.52rem;letter-spacing:.2em;
   color:rgba(26,8,40,.18);text-transform:uppercase;z-index:6;
-  animation:simpleFade 1.2s var(--ease) .6s both;
+  animation:fadeSlideUp 1.4s var(--ease) .6s both;
 }
+
+/* Main title block — normal flex item, below the lotus, NO overlap */
 .hero-copy{
   position:relative;z-index:5;
   text-align:center;
   width:100%;max-width:760px;padding:0 28px;
   animation:heroCopyIn 1.4s var(--ease) .9s both;
 }
-@keyframes heroCopyIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@keyframes fadeSlideUp{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes heroCopyIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateX(-50%) translateY(8px)}
+  to{opacity:1;transform:translateX(-50%) translateY(0)}
+}
 @keyframes simpleFade{from{opacity:0}to{opacity:1}}
+.eu-badge{animation:simpleFade 1s var(--ease) .4s both}
+.h-aside{animation:simpleFade 1.2s var(--ease) .6s both}
 
 .hero-title{line-height:1;margin-bottom:20px}
-.ht-eye{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px}
-.ht-eye-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,rgba(176,87,154,.38),transparent)}
-.ht-eye-text{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3)}
+
+/* — "STYLE IS" eyebrow — */
+.ht-eye{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-bottom:8px;
+}
+.ht-eye-line{
+  width:36px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(176,87,154,.38),transparent);
+}
+.ht-eye-text{
+  font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3);
+}
+
+/* — "Identity," — large italic, clean, no blend-mode */
 .ht-main{
-  display:block;font-size:clamp(3rem,6.5vw,7rem);
-  font-style:italic;font-weight:400;color:var(--pm);
+  display:block;
+  font-size:clamp(3rem,6.5vw,7rem);
+  font-style:italic;font-weight:400;
+  color:var(--pm);
   letter-spacing:-.015em;line-height:.94;
 }
+
+/* — "Not Property." — */
 .ht-sub{
-  display:block;font-size:clamp(1.4rem,3vw,3.4rem);
+  display:block;
+  font-size:clamp(1.4rem,3vw,3.4rem);
   font-weight:700;color:var(--ink);
   letter-spacing:-.028em;line-height:1.08;
   margin-top:3px;margin-bottom:22px;
 }
+
 .hero-actions{display:flex;gap:14px;justify-content:center}
 .btn-main{
   background:var(--pm);color:#fff;border:none;
@@ -202,7 +248,10 @@ nav{
   box-shadow:0 4px 28px rgba(120,50,170,.05),inset 0 1px 0 rgba(255,255,255,.96);
   transition:transform .32s var(--ease),box-shadow .32s var(--ease);
 }
-.feat-card::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.38) 0%,transparent 58%)}
+.feat-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.38) 0%,transparent 58%);
+}
 .feat-card:hover{transform:translateY(-5px);box-shadow:0 14px 48px rgba(120,50,170,.1)}
 .fc-icon{font-size:1.7rem;margin-bottom:18px;display:block}
 .fc-num{position:absolute;top:26px;right:30px;font-size:.6rem;letter-spacing:.15em;color:var(--ink3);text-transform:uppercase}
@@ -211,9 +260,19 @@ nav{
 .fc-tag{display:inline-block;margin-top:18px;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;background:var(--pm2);color:var(--pm);padding:4px 10px;border-radius:2px}
 
 /* ─── QUOTE ──────────────────────────────────────── */
-.q-band{padding:90px 48px;background:var(--ink);text-align:center;position:relative;overflow:hidden}
-.q-band::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;border:1px solid rgba(176,87,154,.18);pointer-events:none}
-.q-text{font-size:clamp(1.45rem,3.2vw,2.7rem);font-style:italic;font-weight:400;color:#FAF8F5;max-width:860px;margin:0 auto;letter-spacing:-.02em;line-height:1.42}
+.q-band{
+  padding:90px 48px;background:var(--ink);text-align:center;
+  position:relative;overflow:hidden;
+}
+.q-band::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;border-radius:50%;
+  border:1px solid rgba(176,87,154,.18);pointer-events:none;
+}
+.q-text{
+  font-size:clamp(1.45rem,3.2vw,2.7rem);font-style:italic;font-weight:400;
+  color:#FAF8F5;max-width:860px;margin:0 auto;letter-spacing:-.02em;line-height:1.42;
+}
 .q-attr{margin-top:26px;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.42)}
 
 /* ─── EU ACT ──────────────────────────────────────── */
@@ -252,7 +311,11 @@ nav{
   transition:transform .15s ease;
   position:relative;overflow:hidden;
 }
-.pp-face::before{content:'';position:absolute;top:-60%;right:-30%;width:200%;height:200%;border-radius:50%;background:radial-gradient(circle,rgba(176,87,154,.14) 0%,transparent 62%);pointer-events:none}
+.pp-face::before{
+  content:'';position:absolute;top:-60%;right:-30%;
+  width:200%;height:200%;border-radius:50%;
+  background:radial-gradient(circle,rgba(176,87,154,.14) 0%,transparent 62%);pointer-events:none;
+}
 .pp-logo-big{font-size:2.4rem;font-weight:700;color:rgba(250,248,245,.9);letter-spacing:.04em}
 .pp-label{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.42);margin-bottom:3px;margin-top:14px}
 .pp-val{font-size:.82rem;color:rgba(250,248,245,.85)}
@@ -356,8 +419,7 @@ nav{
 .form-grp input:focus,.form-grp select:focus{border-color:var(--pm)}
 .form-sub{width:100%;padding:12px;background:var(--pm);color:#fff;border:none;font-size:.85rem;letter-spacing:.07em;text-transform:uppercase;margin-top:6px;transition:background .2s}
 .form-sub:hover{background:var(--pu)}
-.form-sub:disabled{background:rgba(176,87,154,.45);cursor:not-allowed}
-.auth-err{color:#C04040;font-size:.78rem;margin-top:7px;display:none;line-height:1.5}
+.auth-err{color:#C04040;font-size:.78rem;margin-top:7px;display:none}
 .form-switch{margin-top:18px;font-size:.8rem;text-align:center;color:var(--ink2)}
 .form-switch button{background:none;border:none;color:var(--pm);font-size:.8rem}
 
@@ -390,6 +452,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 <body>
 <a class="sr-only" href="#main-content">Skip to content</a>
 
+<!-- Cursor -->
 <div id="cur-dot" aria-hidden="true"></div>
 <div id="cur-ring" aria-hidden="true"></div>
 
@@ -407,10 +470,15 @@ footer p{font-size:.78rem;letter-spacing:.04em}
           <stop offset="100%" stop-color="#C06898"/>
         </radialGradient>
       </defs>
+      <!-- Center petal -->
       <path d="M 17,26 C 10,23 8,14 17,6 C 26,14 24,23 17,26 Z" fill="url(#lg1)"/>
+      <!-- Left petal -->
       <path d="M 17,26 C 6,26 2,16 10,9 C 17,12 20,21 17,26 Z" fill="url(#lg2)" opacity=".72"/>
+      <!-- Right petal -->
       <path d="M 17,26 C 28,26 32,16 24,9 C 17,12 14,21 17,26 Z" fill="url(#lg2)" opacity=".72"/>
+      <!-- Gold water line -->
       <ellipse cx="17" cy="27" rx="6.5" ry="1.8" fill="#C4943A" opacity=".5"/>
+      <!-- Pistil -->
       <circle cx="17" cy="17" r="2.8" fill="rgba(255,255,255,.38)"/>
     </svg>
     <div class="logo-wordmark">
@@ -426,58 +494,93 @@ footer p{font-size:.78rem;letter-spacing:.04em}
   <button class="nav-cta" onclick="openModal('login')" aria-label="Log in">Log In</button>
 </nav>
 
+<!-- ─── MAIN ─────────────────────────────────────── -->
 <main id="main-content">
+
 <div id="page-home" style="display:block">
 
 <!-- HERO -->
 <section class="hero" aria-label="Hero">
+
+  <!-- Lotus SVG — viewBox centered at (0,0) so all transforms work cleanly -->
   <div class="lotus-stage" aria-hidden="true">
     <svg id="lotusSvg" viewBox="-460 -460 920 920" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
       <defs>
+        <!-- Painterly displacement filter -->
         <filter id="paint" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
           <feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="7" result="noise"/>
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
           <feGaussianBlur in="displaced" stdDeviation="1.5" result="blurred"/>
           <feComposite in="blurred" in2="SourceGraphic" operator="over"/>
         </filter>
+        <!-- Soft center glow -->
         <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="14" result="blur"/>
           <feComposite in="SourceGraphic" in2="blur" operator="over"/>
         </filter>
+
+        <!-- Per-layer pastel radial gradients (base = bottom, tip = top) -->
         <radialGradient id="gLav" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
-          <stop offset="0%" stop-color="#EDE0F8"/><stop offset="55%" stop-color="#C8A8D8"/><stop offset="100%" stop-color="#A070B8" stop-opacity=".55"/>
+          <stop offset="0%" stop-color="#EDE0F8"/>
+          <stop offset="55%" stop-color="#C8A8D8"/>
+          <stop offset="100%" stop-color="#A070B8" stop-opacity=".55"/>
         </radialGradient>
         <radialGradient id="gRose" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
-          <stop offset="0%" stop-color="#FDDDE8"/><stop offset="55%" stop-color="#F0B8CC"/><stop offset="100%" stop-color="#D080A0" stop-opacity=".55"/>
+          <stop offset="0%" stop-color="#FDDDE8"/>
+          <stop offset="55%" stop-color="#F0B8CC"/>
+          <stop offset="100%" stop-color="#D080A0" stop-opacity=".55"/>
         </radialGradient>
         <radialGradient id="gPeach" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
-          <stop offset="0%" stop-color="#FEF0E4"/><stop offset="52%" stop-color="#F4C4A4"/><stop offset="100%" stop-color="#D89070" stop-opacity=".5"/>
+          <stop offset="0%" stop-color="#FEF0E4"/>
+          <stop offset="52%" stop-color="#F4C4A4"/>
+          <stop offset="100%" stop-color="#D89070" stop-opacity=".5"/>
         </radialGradient>
         <radialGradient id="gLilac" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
-          <stop offset="0%" stop-color="#F0DCFC"/><stop offset="55%" stop-color="#D4A8EC"/><stop offset="100%" stop-color="#A868D0" stop-opacity=".55"/>
+          <stop offset="0%" stop-color="#F0DCFC"/>
+          <stop offset="55%" stop-color="#D4A8EC"/>
+          <stop offset="100%" stop-color="#A868D0" stop-opacity=".55"/>
         </radialGradient>
         <radialGradient id="gViolet" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
-          <stop offset="0%" stop-color="#DEC4F0"/><stop offset="52%" stop-color="#A880D4"/><stop offset="100%" stop-color="#7040A8" stop-opacity=".6"/>
+          <stop offset="0%" stop-color="#DEC4F0"/>
+          <stop offset="52%" stop-color="#A880D4"/>
+          <stop offset="100%" stop-color="#7040A8" stop-opacity=".6"/>
         </radialGradient>
         <radialGradient id="gDeep" cx="50%" cy="96%" r="88%" fx="50%" fy="96%">
-          <stop offset="0%" stop-color="#C8A0E0"/><stop offset="52%" stop-color="#8848A8"/><stop offset="100%" stop-color="#4A2070" stop-opacity=".65"/>
+          <stop offset="0%" stop-color="#C8A0E0"/>
+          <stop offset="52%" stop-color="#8848A8"/>
+          <stop offset="100%" stop-color="#4A2070" stop-opacity=".65"/>
         </radialGradient>
         <radialGradient id="gGold" cx="50%" cy="50%" r="80%">
-          <stop offset="0%" stop-color="#FFF8C0"/><stop offset="45%" stop-color="#ECC860"/><stop offset="100%" stop-color="#B88020"/>
+          <stop offset="0%" stop-color="#FFF8C0"/>
+          <stop offset="45%" stop-color="#ECC860"/>
+          <stop offset="100%" stop-color="#B88020"/>
         </radialGradient>
         <radialGradient id="gGoldGlow" cx="50%" cy="50%" r="80%">
-          <stop offset="0%" stop-color="#FFFBE8" stop-opacity=".9"/><stop offset="100%" stop-color="#F0D060" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#FFFBE8" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#F0D060" stop-opacity="0"/>
         </radialGradient>
+
+        <!-- Sheen/lace shimmer pattern -->
         <pattern id="sheen" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
           <circle cx="10" cy="10" r="3" fill="rgba(255,255,255,.2)"/>
           <circle cx="0" cy="0" r="1.8" fill="rgba(255,255,255,.12)"/>
           <circle cx="20" cy="20" r="1.8" fill="rgba(255,255,255,.12)"/>
+          <circle cx="0" cy="20" r="1.2" fill="rgba(255,255,255,.08)"/>
+          <circle cx="20" cy="0" r="1.2" fill="rgba(255,255,255,.08)"/>
         </pattern>
+
+        <!-- Petal paths — all pointing straight UP from base near y=0 -->
+        <!-- Outer petal: long + broad -->
         <path id="pO" d="M 0,18 C -58,-30 -68,-200 -28,-352 Q 0,-404 28,-352 C 68,-200 58,-30 0,18 Z"/>
+        <!-- Medium petal -->
         <path id="pM" d="M 0,14 C -42,-22 -50,-148 -20,-260 Q 0,-300 20,-260 C 50,-148 42,-22 0,14 Z"/>
+        <!-- Inner petal -->
         <path id="pI" d="M 0,10 C -30,-16 -35,-105 -14,-186 Q 0,-216 14,-186 C 35,-105 30,-16 0,10 Z"/>
+        <!-- Core petal -->
         <path id="pC" d="M 0,7 C -20,-11 -22,-72 -9,-124 Q 0,-144 9,-124 C 22,-72 20,-11 0,7 Z"/>
       </defs>
+
+      <!-- All layer groups — filled by JS — centered at (0,0) -->
       <g id="lotusRoot" filter="url(#paint)">
         <g id="lL1" class="play"></g>
         <g id="lL2" class="play"></g>
@@ -486,11 +589,16 @@ footer p{font-size:.78rem;letter-spacing:.04em}
         <g id="lL5" class="play"></g>
         <g id="lL6" class="play"></g>
       </g>
+
+      <!-- Center stamen cluster -->
       <g id="lotusCenter" class="play" filter="url(#glow)">
+        <!-- Outer gold aura -->
         <circle cx="0" cy="0" r="62" fill="url(#gGoldGlow)" opacity=".8"/>
+        <!-- Gold disc layers -->
         <circle cx="0" cy="0" r="52" fill="url(#gGold)" opacity=".92"/>
         <circle cx="0" cy="0" r="36" fill="#F8F0B0" opacity=".9"/>
         <circle cx="0" cy="0" r="22" fill="#FFFBE8" opacity=".98"/>
+        <!-- Stamen spokes -->
         <g stroke="rgba(160,100,20,.5)" stroke-width="1.1">
           <line x1="0" y1="-26" x2="0" y2="-58"/>
           <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(24)"/>
@@ -508,6 +616,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
           <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(312)"/>
           <line x1="0" y1="-26" x2="0" y2="-58" transform="rotate(336)"/>
         </g>
+        <!-- Anther dots at stamen tips -->
         <circle cx="0" cy="-60" r="4.5" fill="#E8C060"/>
         <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(24)"/>
         <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(48)"/>
@@ -523,30 +632,39 @@ footer p{font-size:.78rem;letter-spacing:.04em}
         <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(288)"/>
         <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(312)"/>
         <circle cx="0" cy="-60" r="4.5" fill="#E8C060" transform="rotate(336)"/>
+        <!-- Pistil -->
         <circle cx="0" cy="0" r="9" fill="#C4943A"/>
         <circle cx="0" cy="0" r="5" fill="#FFFBE8"/>
       </g>
     </svg>
   </div>
 
+  <!-- Pollen (absolute over full hero) -->
   <div id="pollenBox" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3"></div>
 
+  <!-- Labels -->
   <p class="hero-label" aria-hidden="true">Cholponai Kalybaeva &nbsp;·&nbsp; Macromedia University, Berlin &nbsp;·&nbsp; 2026</p>
   <div class="eu-badge" aria-label="EU AI Act Compliant">✦ EU AI Act Compliant</div>
   <p class="h-aside" aria-hidden="true">Style &middot; Identity &middot; AI Rights</p>
 
+  <!-- Poster title — lotus is the illustration, this is the caption -->
   <div class="hero-copy">
-    <div class="hero-title" role="heading" aria-level="1" aria-label="Style Is Identity, Not Property.">
+    <div class="hero-title"
+         role="heading" aria-level="1"
+         aria-label="Style Is Identity, Not Property.">
+      <!-- eyebrow -->
       <div class="ht-eye" aria-hidden="true">
         <span class="ht-eye-line"></span>
         <span class="ht-eye-text">Style Is</span>
         <span class="ht-eye-line"></span>
       </div>
+      <!-- hero word — blends into lotus via mix-blend-mode -->
       <span class="ht-main" aria-hidden="true">Identity,</span>
+      <!-- closer -->
       <span class="ht-sub" aria-hidden="true">Not Property.</span>
     </div>
     <div class="hero-actions">
-      <button class="btn-main" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">Claim Your Passport</button>
+      <button class="btn-main" onclick="openModal('register')">Claim Your Passport</button>
       <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore →</button>
     </div>
   </div>
@@ -642,7 +760,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
     <div class="pp-text reveal">
       <h2 id="pp-title">Your Style,<br>Officially Documented</h2>
       <p>The Style Passport is a living document that captures the unique elements of your visual identity. It evolves as you create — and stands as legal evidence if your style is ever copied.</p>
-      <button class="btn-main" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">Get Your Passport</button>
+      <button class="btn-main" onclick="openModal('register')">Get Your Passport</button>
     </div>
     <div class="passport-card reveal" style="transition-delay:.12s" id="passportCard">
       <div class="pp-face" id="ppFace">
@@ -663,7 +781,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 <section id="register" class="register" aria-labelledby="reg-title">
   <div class="reg-inner">
     <h2 id="reg-title" class="reveal">Join the Platform</h2>
-    <p class="sub reveal" style="transition-delay:.08s">Register as an illustrator to claim your Style Passport, log conflicts, and access your rights under the EU AI Act. After submitting, log in with your email to access your dashboard.</p>
+    <p class="sub reveal" style="transition-delay:.08s">Register as an illustrator to claim your Style Passport, log conflicts, and access your rights under the EU AI Act.</p>
     <div class="tally-wrap reveal" style="transition-delay:.18s">
       <iframe src="https://tally.so/embed/MePZDl?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
         loading="lazy" width="100%" height="700" frameborder="0"
@@ -672,6 +790,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
   <p>© 2026 Cholponai Kalybaeva — Macromedia University of Applied Sciences, Berlin</p>
   <p class="foot-th">"Style Is Identity, Not Property"</p>
@@ -681,7 +800,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 
 <!-- ─── DASHBOARD PAGE ─────────────────────────── -->
 <div id="page-dashboard" class="page">
-  <button class="back-btn" onclick="showPage('home')">← Back to home</button>
+  <button class="back-btn" onclick="showPage('home')">← Back</button>
   <div class="page-head">
     <h1>Dashboard</h1>
     <p id="dash-welcome">Welcome back.</p>
@@ -727,340 +846,349 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 </div>
 
 <script>
-// ─── AIRTABLE CONFIG ───────────────────────────
-const KEY  = 'pat7xOTmWRbiw6LII.08c3a8b76fe11cd47802b3728a141fd9b3d4036cab77d7cfe20dc869b2039eaa';
-const BASE = 'appmpPaevLqV2UAoG';
-const TABLE = 'Illustrators'; // ← must match your Airtable table name EXACTLY
+// ─── AIRTABLE ──────────────────────────────────
+const KEY='pat7xOTmWRbiw6LII.08c3a8b76fe11cd47802b3728a141fd9b3d4036cab77d7cfe20dc869b2039eaa';
+const BASE='appmpPaevLqV2UAoG';
+let user=null;
 
-let user = null;
-
-async function at(table, params = '') {
-  const r = await fetch(
-    `https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}${params}`,
-    { headers: { Authorization: 'Bearer ' + KEY } }
-  );
-  if (!r.ok) throw new Error(r.status);
+async function at(t,p=''){
+  const r=await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(t)}${p}`,
+    {headers:{Authorization:'Bearer '+KEY}});
+  if(!r.ok)throw new Error(r.status);
   return r.json();
 }
 
-// Find illustrator by email using Airtable filterByFormula
-async function findByEmail(email) {
-  const formula = encodeURIComponent(`{Email}="${email}"`);
-  const data = await at(TABLE, `?filterByFormula=${formula}&maxRecords=1`);
-  return data.records?.[0] || null;
-}
-
-// ─── CURSOR ───────────────────────────────────
+// ─── CURSOR ──────────────────────────────────
 (function(){
-  const dot = document.getElementById('cur-dot');
-  const ring = document.getElementById('cur-ring');
-  let rx = 0, ry = 0, dx = 0, dy = 0;
-  document.addEventListener('mousemove', e => {
-    dx = e.clientX; dy = e.clientY;
-    dot.style.left = dx + 'px'; dot.style.top = dy + 'px';
+  const dot=document.getElementById('cur-dot');
+  const ring=document.getElementById('cur-ring');
+  let rx=0,ry=0,dx=0,dy=0;
+  document.addEventListener('mousemove',e=>{
+    dx=e.clientX;dy=e.clientY;
+    dot.style.left=dx+'px';dot.style.top=dy+'px';
   });
   (function loop(){
-    rx += (dx - rx) * .11; ry += (dy - ry) * .11;
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    rx+=(dx-rx)*.11;ry+=(dy-ry)*.11;
+    ring.style.left=rx+'px';ring.style.top=ry+'px';
     requestAnimationFrame(loop);
   })();
-  document.querySelectorAll('a,button,input,select,iframe').forEach(el => {
-    el.addEventListener('mouseenter', () => { ring.style.width = '54px'; ring.style.height = '54px'; ring.style.opacity = '.38'; });
-    el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '1'; });
+  document.querySelectorAll('a,button,input,select,iframe').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ring.style.width='54px';ring.style.height='54px';ring.style.opacity='.38'});
+    el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.opacity='1'});
   });
 })();
 
 // ─── LOTUS BUILDER ───────────────────────────
+// Key insight: all petals use CSS transform-origin: 50% 100%
+// so they rotate from their base (bottom of bounding box ≈ y=18).
+// Since all petals share the same path centered at x=0,y=0 → y=18 base,
+// rotations spread correctly from the flower center.
 (function buildLotus(){
-  const NS = 'http://www.w3.org/2000/svg';
-  function mk(tag, attrs) {
-    const e = document.createElementNS(NS, tag);
-    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+  const NS='http://www.w3.org/2000/svg';
+  function mk(tag,attrs){
+    const e=document.createElementNS(NS,tag);
+    Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
     return e;
   }
-  const LAYERS = [
-    ['lL1','#pO','url(#gLav)',   .70, 14,  0,  .24, 'osc-a'],
-    ['lL2','#pO','url(#gRose)',  .74, 12, 13,  .22, 'osc-b'],
-    ['lL3','#pM','url(#gPeach)', .78, 10,  7,  .19, 'osc-c'],
-    ['lL4','#pM','url(#gLilac)', .82,  9, 20,  .17, 'osc-d'],
-    ['lL5','#pI','url(#gViolet)',.86,  7,  4,  .14, 'osc-e'],
-    ['lL6','#pC','url(#gDeep)',  .90,  5, 16,  .11, 'osc-b'],
+
+  // [groupId, petalPath, gradient, opacity, count, rotationOffset, sheenOpacity, oscClass]
+  const LAYERS=[
+    ['lL1','#pO','url(#gLav)',  .70,14,  0,  .24,'osc-a'],
+    ['lL2','#pO','url(#gRose)', .74,12, 13,  .22,'osc-b'],
+    ['lL3','#pM','url(#gPeach)',.78,10,  7,  .19,'osc-c'],
+    ['lL4','#pM','url(#gLilac)',.82, 9, 20,  .17,'osc-d'],
+    ['lL5','#pI','url(#gViolet)',.86, 7,  4,  .14,'osc-e'],
+    ['lL6','#pC','url(#gDeep)', .90, 5, 16,  .11,'osc-b'],
   ];
-  LAYERS.forEach(([gId, pHref, fill, opacity, count, rotOff, sheenOp, oscCls]) => {
-    const g = document.getElementById(gId);
-    if (!g) return;
-    for (let i = 0; i < count; i++) {
-      const angle = (360 / count) * i + rotOff;
-      const tfm = `transform-box:fill-box;transform-origin:50% 100%;transform:rotate(${angle}deg)`;
-      const pFill = mk('use', { href: pHref, fill, opacity: String(opacity) });
-      pFill.style.cssText = tfm;
-      const pSheen = mk('use', { href: pHref, fill: 'url(#sheen)', opacity: String(sheenOp) });
-      pSheen.style.cssText = tfm;
+
+  LAYERS.forEach(([gId,pHref,fill,opacity,count,rotOff,sheenOp,oscCls])=>{
+    const g=document.getElementById(gId);
+    if(!g)return;
+
+    for(let i=0;i<count;i++){
+      const angle=(360/count)*i+rotOff;
+      const tfm=`transform-box:fill-box;transform-origin:50% 100%;transform:rotate(${angle}deg)`;
+
+      // Color fill
+      const pFill=mk('use',{href:pHref,fill,opacity:String(opacity)});
+      pFill.style.cssText=tfm;
+
+      // Sheen overlay
+      const pSheen=mk('use',{href:pHref,fill:'url(#sheen)',opacity:String(sheenOp)});
+      pSheen.style.cssText=tfm;
+
       g.appendChild(pFill);
       g.appendChild(pSheen);
     }
-    g._oscClass = oscCls;
+    // Oscillation class added after bloom (avoids fighting transition)
+    g._oscClass=oscCls;
   });
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const layers = document.querySelectorAll('.play');
-    layers.forEach((g, i) => { g.style.transitionDelay = `${i * 0.2}s`; g.classList.add('show'); });
-    const totalBloom = (layers.length * 0.2 + 1.5) * 1000;
-    setTimeout(() => {
-      layers.forEach(g => { g.style.transitionDelay = '0s'; if (g._oscClass) g.classList.add(g._oscClass); });
-    }, totalBloom);
+
+  // Trigger bloom with staggered delays
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const layers=document.querySelectorAll('.play');
+    layers.forEach((g,i)=>{
+      g.style.transitionDelay=`${i*0.2}s`;
+      g.classList.add('show');
+    });
+    // After bloom completes, add oscillation and clear delay
+    const totalBloom=(layers.length*0.2+1.5)*1000;
+    setTimeout(()=>{
+      layers.forEach(g=>{
+        g.style.transitionDelay='0s';
+        if(g._oscClass)g.classList.add(g._oscClass);
+      });
+    },totalBloom);
   }));
 })();
 
 // ─── POLLEN ───────────────────────────────────
 (function(){
-  const box = document.getElementById('pollenBox');
-  const colors = ['#C8A8D8','#F0B8C8','#ECCF70','#D4A8EC','#F4C4A8','#E8B8D4'];
-  for (let i = 0; i < 14; i++) {
-    const p = document.createElement('div');
-    p.className = 'pollen';
-    const sz = 3 + Math.random() * 5.5;
-    p.style.cssText = `width:${sz}px;height:${sz}px;left:${18+Math.random()*64}%;top:${22+Math.random()*56}%;background:${colors[i%colors.length]};--dur:${5+Math.random()*7}s;--del:${Math.random()*9}s;--rx:${(Math.random()-.5)*130}px;--ry:${-(90+Math.random()*180)}px;`;
+  const box=document.getElementById('pollenBox');
+  const colors=['#C8A8D8','#F0B8C8','#ECCF70','#D4A8EC','#F4C4A8','#E8B8D4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');
+    p.className='pollen';
+    const sz=3+Math.random()*5.5;
+    p.style.cssText=`
+      width:${sz}px;height:${sz}px;
+      left:${18+Math.random()*64}%;
+      top:${22+Math.random()*56}%;
+      background:${colors[i%colors.length]};
+      --dur:${5+Math.random()*7}s;
+      --del:${Math.random()*9}s;
+      --rx:${(Math.random()-.5)*130}px;
+      --ry:${-(90+Math.random()*180)}px;
+    `;
     box.appendChild(p);
   }
 })();
 
-// ─── PARALLAX ─────────────────────────────────
-document.addEventListener('mousemove', e => {
-  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-  const fx = (e.clientX - cx) / cx, fy = (e.clientY - cy) / cy;
-  const svg = document.getElementById('lotusSvg');
-  if (svg) svg.style.transform = `translate(${fx*14}px,${fy*9}px)`;
+// ─── MOUSEMOVE PARALLAX ───────────────────────
+document.addEventListener('mousemove',e=>{
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  const fx=(e.clientX-cx)/cx,fy=(e.clientY-cy)/cy;
+  const svg=document.getElementById('lotusSvg');
+  if(svg)svg.style.transform=`translate(${fx*14}px,${fy*9}px)`;
+  const tl=document.querySelector('.h-tl');
+  const mr=document.querySelector('.h-mr');
+  if(tl)tl.style.transform=`translate(${fx*-20}px,${fy*-13}px)`;
+  if(mr)mr.style.transform=`translate(${fx*16}px,${fy*11}px)`;
 });
 
 // ─── PASSPORT TILT ────────────────────────────
-const ppCard = document.getElementById('passportCard');
-const ppFace = document.getElementById('ppFace');
-if (ppCard && ppFace) {
-  ppCard.addEventListener('mousemove', e => {
-    const r = ppCard.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - .5;
-    const y = (e.clientY - r.top) / r.height - .5;
-    ppFace.style.transform = `rotateY(${x*20}deg) rotateX(${-y*14}deg)`;
+const ppCard=document.getElementById('passportCard');
+const ppFace=document.getElementById('ppFace');
+if(ppCard&&ppFace){
+  ppCard.addEventListener('mousemove',e=>{
+    const r=ppCard.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    ppFace.style.transform=`rotateY(${x*20}deg) rotateX(${-y*14}deg)`;
   });
-  ppCard.addEventListener('mouseleave', () => { ppFace.style.transform = ''; });
+  ppCard.addEventListener('mouseleave',()=>{ppFace.style.transform=''});
 }
 
 // ─── MAGNETIC BUTTONS ─────────────────────────
-document.querySelectorAll('.btn-main,.btn-ghost').forEach(btn => {
-  btn.addEventListener('mousemove', e => {
-    const r = btn.getBoundingClientRect();
-    btn.style.transform = `translate(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.16}px)`;
+document.querySelectorAll('.btn-main,.btn-ghost').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    btn.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.16}px)`;
   });
-  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  btn.addEventListener('mouseleave',()=>{btn.style.transform=''});
 });
 
 // ─── SCROLL REVEAL ────────────────────────────
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
-}, { threshold: .1 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in-view');io.unobserve(e.target)}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
 // ─── ROUTING ──────────────────────────────────
-function showPage(id) {
-  const home = document.getElementById('page-home');
-  const dash = document.getElementById('page-dashboard');
-  if (id === 'dashboard') {
-    home.style.display = 'none';
-    dash.classList.add('active');
-    loadDashboard();
-  } else {
-    home.style.display = 'block';
-    dash.classList.remove('active');
-  }
-  window.scrollTo(0, 0);
+function showPage(id){
+  ['home','dashboard'].forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el)el.style.display=p===id?'block':'none';
+  });
+  window.scrollTo(0,0);
+  if(id==='dashboard')loadDashboard();
 }
 
-function showTab(tab) {
-  ['overview','portfolio','conflicts','rights'].forEach(t => {
-    const el = document.getElementById('tab-' + t);
-    if (el) el.style.display = t === tab ? 'block' : 'none';
+function showTab(tab){
+  ['overview','portfolio','conflicts','rights'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    if(el)el.style.display=t===tab?'block':'none';
   });
-  document.querySelectorAll('.dt').forEach((b, i) => {
-    b.classList.toggle('active', ['overview','portfolio','conflicts','rights'][i] === tab);
+  document.querySelectorAll('.dt').forEach((b,i)=>{
+    b.classList.toggle('active',['overview','portfolio','conflicts','rights'][i]===tab);
   });
 }
 
-// ─── AUTH MODAL ────────────────────────────────
-function openModal(mode) {
-  document.getElementById('modalContent').innerHTML = mode === 'login' ? loginHTML() : registerHTML();
+// ─── AUTH ──────────────────────────────────────
+function openModal(mode){
+  document.getElementById('modalContent').innerHTML=mode==='login'?loginHTML():registerHTML();
   document.getElementById('authModal').classList.add('open');
 }
-function closeModal() { document.getElementById('authModal').classList.remove('open'); }
-document.getElementById('authModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+function closeModal(){document.getElementById('authModal').classList.remove('open')}
+document.getElementById('authModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 
-function loginHTML() { return `
+function loginHTML(){return`
   <h2 id="modalTitle">Welcome Back</h2>
-  <p class="sub">Enter the email you registered with to access your Style Passport.</p>
-  <div class="form-grp">
-    <label for="li-e">Email</label>
-    <input id="li-e" type="email" placeholder="you@studio.com" onkeydown="if(event.key==='Enter')doLogin()">
-  </div>
-  <p class="auth-err" id="li-err"></p>
+  <p class="sub">Enter the email you registered with.</p>
+  <div class="form-grp"><label for="li-e">Email</label><input id="li-e" type="email" placeholder="you@studio.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <p class="auth-err" id="li-err" style="display:none"></p>
   <button class="form-sub" id="li-btn" onclick="doLogin()">Access My Passport</button>
-  <div class="form-switch">Not registered yet? <button onclick="closeModal();document.getElementById('register').scrollIntoView({behavior:'smooth'})">Register here →</button></div>
-`; }
-
-function registerHTML() { return `
+  <div class="form-switch">Not registered? <button onclick="closeModal();document.getElementById('register').scrollIntoView({behavior:'smooth'})">Register here</button></div>
+`}
+function registerHTML(){return`
   <h2 id="modalTitle">Claim Your Passport</h2>
-  <p class="sub">Fill in the registration form below to create your Style Identity Passport.</p>
-  <div style="text-align:center;padding:16px 0 8px">
-    <button class="form-sub" onclick="closeModal();document.getElementById('register').scrollIntoView({behavior:'smooth'})">Go to Registration Form ↓</button>
+  <p class="sub">Create your Style Identity account</p>
+  <div class="form-grp"><label for="ri-n">Full Name</label><input id="ri-n" type="text" placeholder="Your name"></div>
+  <div class="form-grp"><label for="ri-e">Email</label><input id="ri-e" type="email" placeholder="you@studio.com"></div>
+  <div class="form-grp"><label for="ri-s">Specialization</label>
+    <select id="ri-s">
+      <option value="">Select your style…</option>
+      <option>Editorial Illustration</option><option>Character Design</option>
+      <option>Botanical Art</option><option>Concept Art</option>
+      <option>Surface Pattern</option><option>Children's Book</option>
+      <option>Graphic Novel</option><option>Other</option>
+    </select>
   </div>
-  <div class="form-switch">Already registered? <button onclick="openModal('login')">Sign in with email</button></div>
-`; }
+  <p class="auth-err" id="ri-err">Please fill all fields.</p>
+  <button class="form-sub" onclick="doRegister()">Create Passport</button>
+  <div class="form-switch">Already registered? <button onclick="openModal('login')">Sign in</button></div>
+`}
 
-// ─── LOGIN — real Airtable lookup ─────────────
-async function doLogin() {
-  const emailInput = document.getElementById('li-e');
-  const errEl = document.getElementById('li-err');
-  const btn = document.getElementById('li-btn');
-  const email = emailInput.value.trim().toLowerCase();
-
-  errEl.style.display = 'none';
-  if (!email || !email.includes('@')) {
-    errEl.textContent = 'Please enter a valid email address.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  btn.textContent = 'Looking up…';
-  btn.disabled = true;
-
-  try {
-    const record = await findByEmail(email);
-    if (!record) {
-      errEl.textContent = 'No registration found for this email. Please fill in the registration form first — it takes a few minutes to process.';
-      errEl.style.display = 'block';
-      btn.textContent = 'Access My Passport';
-      btn.disabled = false;
-      return;
+async function doLogin(){
+  const emailInput=document.getElementById('li-e');
+  const errEl=document.getElementById('li-err');
+  const btn=document.getElementById('li-btn');
+  const email=emailInput.value.trim().toLowerCase();
+  errEl.style.display='none';
+  if(!email||!email.includes('@')){errEl.textContent='Enter a valid email.';errEl.style.display='block';return;}
+  btn.textContent='Looking up…';btn.disabled=true;
+  try{
+    const formula=encodeURIComponent('{Email}="'+email+'"');
+    const data=await at('Illustrators','?filterByFormula='+formula+'&maxRecords=1');
+    const record=data.records&&data.records[0];
+    if(!record){
+      errEl.textContent='No registration found. Submit the form below first.';
+      errEl.style.display='block';btn.textContent='Access My Passport';btn.disabled=false;return;
     }
-    const f = record.fields;
-    user = {
-      name: f.Name || email.split('@')[0],
-      email: f.Email || email,
-      spec: f.Spec || f.Specialization || 'Illustrator',
-      style: f.Style || f.StyleDescription || '',
-      portfolio: f.Portfolio || f.PortfolioURL || '',
-      passportId: f.PassportID || '—',
-      registered: f.Registered || f.RegistrationDate || new Date().toLocaleDateString('en-GB'),
+    const f=record.fields;
+    user={
+      name:f['Full Name']||f.Name||email.split('@')[0],
+      email:f.Email||email,
+      spec:f.Spec||f.Specialization||f['Illustration Style']||'Illustrator',
+      style:f['Style Description']||f.Style||f.StyleDescription||'',
+      portfolio:f.Portfolio||f['Portfolio URL']||f.PortfolioURL||'',
+      passportId:f['SIP ID']||f.PassportID||'SIP-2026-001',
+      registered:f.Registered||f['Registration Date']||f.RegistrationDate||new Date().toLocaleDateString('en-GB'),
     };
-    closeModal();
-    updateNav();
-    showPage('dashboard');
-  } catch (err) {
-    errEl.textContent = 'Connection error. Please try again.';
-    errEl.style.display = 'block';
-    console.error(err);
+    closeModal();updateNav();showPage('dashboard');
+  }catch(err){
+    errEl.textContent='Connection error. Try again.';errEl.style.display='block';console.error(err);
   }
-
-  btn.textContent = 'Access My Passport';
-  btn.disabled = false;
+  btn.textContent='Access My Passport';btn.disabled=false;
 }
-
-function updateNav() {
-  if (!user) return;
-  const cta = document.querySelector('.nav-cta');
-  if (cta) { cta.textContent = user.name.split(' ')[0]; cta.onclick = () => showPage('dashboard'); }
-  const pn = document.getElementById('ppName');
-  const ps = document.getElementById('ppSpec');
-  if (pn) pn.textContent = user.name;
-  if (ps) ps.textContent = user.spec;
-  const dw = document.getElementById('dash-welcome');
-  if (dw) dw.textContent = `Welcome back, ${user.name.split(' ')[0]}. Your passport is active.`;
+function doRegister(){
+  const n=document.getElementById('ri-n').value.trim();
+  const e=document.getElementById('ri-e').value.trim();
+  const s=document.getElementById('ri-s').value;
+  if(!n||!e||!s){document.getElementById('ri-err').style.display='block';return}
+  user={name:n,email:e,spec:s};
+  closeModal();updateNav();showPage('dashboard');
+}
+function updateNav(){
+  if(!user)return;
+  const cta=document.querySelector('.nav-cta');
+  if(cta){cta.textContent=user.name.split(' ')[0];cta.onclick=()=>showPage('dashboard')}
+  const pn=document.getElementById('ppName');
+  const ps=document.getElementById('ppSpec');
+  if(pn)pn.textContent=user.name;
+  if(ps)ps.textContent=user.spec;
+  const dw=document.getElementById('dash-welcome');
+  if(dw)dw.textContent=`Welcome back, ${user.name.split(' ')[0]}. Your passport is active.`;
 }
 
 // ─── DASHBOARD ────────────────────────────────
-async function loadDashboard() {
+async function loadDashboard(){
   showTab('overview');
-  const stats = document.getElementById('dashStats');
-  stats.innerHTML = '<p style="color:var(--ink2);font-size:.88rem;padding:20px 0">Loading your data…</p>';
-
-  // Passport card at top
-  const passportOverview = document.createElement('div');
-  passportOverview.id = 'passportOverview';
-  passportOverview.style.cssText = 'margin-bottom:36px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start;max-width:900px';
-  passportOverview.innerHTML = `
-    <div style="width:240px;aspect-ratio:1.586;background:linear-gradient(135deg,#2A0E40,#1A0828,#3A1258);padding:22px;position:relative;overflow:hidden;flex-shrink:0;border:1px solid rgba(176,87,154,.18);">
-      <div style="position:absolute;top:-40%;right:-20%;width:180%;height:180%;border-radius:50%;background:radial-gradient(circle,rgba(176,87,154,.18) 0%,transparent 62%)"></div>
-      <div style="font-size:1.5rem;font-weight:700;color:rgba(250,248,245,.9);letter-spacing:.04em;position:relative">SIP</div>
-      <div style="font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-top:8px;position:relative">Style Passport</div>
-      <div style="font-size:.82rem;color:rgba(250,248,245,.82);margin-top:4px;font-weight:700;position:relative">${user?.name || '—'}</div>
-      <div style="font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-top:10px;position:relative">Specialization</div>
-      <div style="font-size:.72rem;color:rgba(250,248,245,.7);margin-top:2px;position:relative">${user?.spec || '—'}</div>
-      <div style="position:absolute;bottom:12px;right:12px;width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(196,148,58,.4);display:flex;align-items:center;justify-content:center;font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(196,148,58,.6);text-align:center;line-height:1.3">EU AI<br>Act</div>
-    </div>
-    <div>
-      <div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pm);margin-bottom:8px">Passport Status</div>
-      <div style="font-size:1.4rem;font-weight:700;color:var(--ink);margin-bottom:4px">${user?.name || 'Illustrator'}</div>
-      <div style="font-size:.88rem;color:var(--ink2);margin-bottom:6px">${user?.spec || ''}</div>
-      <div style="font-size:.78rem;color:var(--ink2);line-height:1.65;margin-bottom:16px">Your style is documented and protected under the EU AI Act. Use the tabs above to view your details, track conflicts, and generate rights documents.</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-main" style="font-size:.72rem;padding:9px 20px" onclick="showTab('rights')">Rights Centre</button>
-        <button class="btn-ghost" style="font-size:.72rem;padding:8px 20px" onclick="showTab('conflicts')">Conflicts</button>
+  const stats=document.getElementById('dashStats');
+  stats.innerHTML='<p style="color:var(--ink2);font-size:.88rem;padding:20px 0">Loading your data…</p>';
+  try{
+    const[illus,imgs,confs]=await Promise.all([
+      at('Illustrators'),at('Portfolio Images'),at('Conflict Records')
+    ]);
+    const mine=illus.records.filter(r=>user&&r.fields.Email===user.email);
+    stats.innerHTML=`
+      <div class="data-card"><p class="dc-label">Illustrators on Platform</p><p class="dc-val">${illus.records.length}</p></div>
+      <div class="data-card"><p class="dc-label">Portfolio Images</p><p class="dc-val">${imgs.records.length}</p></div>
+      <div class="data-card"><p class="dc-label">Conflict Records</p><p class="dc-val">${confs.records.length}</p></div>
+      <div class="data-card"><p class="dc-label">Your Status</p><p class="dc-val">${mine.length?'Active':'Pending'}</p><p class="dc-sub">${user?.spec||''}</p></div>
+    `;
+    // Passport card at top of overview
+    const passportOverview=document.createElement('div');
+    passportOverview.style.cssText='margin-bottom:36px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start;max-width:900px';
+    passportOverview.innerHTML=`
+      <div style="width:240px;aspect-ratio:1.586;background:linear-gradient(135deg,#2A0E40,#1A0828,#3A1258);padding:22px;position:relative;overflow:hidden;flex-shrink:0;">
+        <div style="position:absolute;top:-40%;right:-20%;width:180%;height:180%;border-radius:50%;background:radial-gradient(circle,rgba(176,87,154,.18) 0%,transparent 62%)"></div>
+        <div style="font-size:1.5rem;font-weight:700;color:rgba(250,248,245,.9);letter-spacing:.04em">SIP</div>
+        <div style="font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-top:8px">Style Passport</div>
+        <div style="font-size:.72rem;color:rgba(250,248,245,.82);margin-top:4px;font-weight:700">${user?.name||'—'}</div>
+        <div style="font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-top:8px">Specialization</div>
+        <div style="font-size:.72rem;color:rgba(250,248,245,.7);margin-top:2px">${user?.spec||'—'}</div>
+        <div style="position:absolute;bottom:12px;right:12px;width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(196,148,58,.4);display:flex;align-items:center;justify-content:center;font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(196,148,58,.6);text-align:center;line-height:1.2">EU AI<br>Act</div>
       </div>
-    </div>
-  `;
-  const tabOverview = document.getElementById('tab-overview');
-  const existing = document.getElementById('passportOverview');
-  if (existing) existing.remove();
-  tabOverview.prepend(passportOverview);
+      <div>
+        <div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pm);margin-bottom:8px">Passport Status</div>
+        <div style="font-size:1.4rem;font-weight:700;color:var(--ink);margin-bottom:6px">Active</div>
+        <div style="font-size:.82rem;color:var(--ink2);line-height:1.6;margin-bottom:16px">Your style is documented and protected under the EU AI Act. Use the tabs above to manage your portfolio, track conflicts, and generate rights documents.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-main" style="font-size:.72rem;padding:9px 20px" onclick="showTab('portfolio')">View Portfolio</button>
+          <button class="btn-ghost" style="font-size:.72rem;padding:8px 20px" onclick="showTab('rights')">Rights Centre</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('tab-overview').prepend(passportOverview);
 
-  // Stats cards
-  stats.innerHTML = `
-    <div class="data-card"><p class="dc-label">Passport ID</p><p class="dc-val" style="font-size:.85rem">${user?.passportId || '—'}</p></div>
-    <div class="data-card"><p class="dc-label">Specialization</p><p class="dc-val" style="font-size:.85rem">${user?.spec || '—'}</p></div>
-    <div class="data-card"><p class="dc-label">Registered</p><p class="dc-val" style="font-size:.85rem">${user?.registered || '—'}</p></div>
-    <div class="data-card"><p class="dc-label">EU AI Act Status</p><p class="dc-val" style="font-size:.85rem;color:var(--pm)">Protected</p></div>
-  `;
-
-  // Portfolio tab — show style description + portfolio link
-  document.getElementById('portfolioGrid').innerHTML = `
-    <div class="data-card" style="grid-column:1/-1">
-      <p class="dc-label">Style Description</p>
-      <p class="dc-val" style="font-size:.9rem;font-weight:400;line-height:1.6">${user?.style || 'No style description on file.'}</p>
-    </div>
-    ${user?.portfolio ? `<div class="data-card"><p class="dc-label">Portfolio URL</p><p class="dc-val" style="font-size:.82rem"><a href="${user.portfolio}" target="_blank" style="color:var(--pm)">${user.portfolio}</a></p></div>` : ''}
-  `;
-
-  // Conflicts tab
-  document.getElementById('conflictsGrid').innerHTML = `
-    <div style="padding:20px 0">
-      <p style="color:var(--ink2);font-size:.88rem;margin-bottom:18px">No conflict records on file. If you discover an AI-generated image that mimics your style, document it here.</p>
-      <button class="btn-main" style="font-size:.78rem;padding:10px 22px" onclick="alert('Conflict submission form — connect to your Airtable Conflict Records table via Make.com to enable this.')">Report a Conflict</button>
-    </div>
-  `;
-
-  // Rights tab
-  document.getElementById('rightsContent').innerHTML = `
-    <div class="rights-block">
-      <p class="rb-num">Article 53 — EU AI Act</p>
-      <h3 class="rb-h">Opt-Out from Training Data</h3>
-      <p class="rb-p">Request formal removal of your work from AI training datasets. Reference your Passport ID: <strong>${user?.passportId || '—'}</strong></p>
-      <button class="btn-main" style="margin-top:18px;display:inline-block;font-size:.78rem">Generate Opt-Out Letter</button>
-    </div>
-    <div class="rights-block">
-      <p class="rb-num">Article 13 — EU AI Act</p>
-      <h3 class="rb-h">Transparency Disclosure</h3>
-      <p class="rb-p">Request a disclosure from AI developers about use of your work in their pipeline.</p>
-      <button class="btn-main" style="margin-top:18px;display:inline-block;font-size:.78rem">Request Disclosure</button>
-    </div>
-    <div class="rights-block">
-      <p class="rb-num">Article 86 — EU AI Act</p>
-      <h3 class="rb-h">Right to Explanation</h3>
-      <p class="rb-p">Obtain a human-readable explanation of AI decisions affecting your work.</p>
-      <button class="btn-main" style="margin-top:18px;display:inline-block;font-size:.78rem">Request Explanation</button>
-    </div>
-  `;
+    document.getElementById('portfolioGrid').innerHTML=imgs.records.slice(0,12).map(r=>`
+      <div class="data-card">
+        <p class="dc-label">${r.fields.Illustrator||'Illustrator'}</p>
+        <p class="dc-val" style="font-size:.83rem">${r.fields.Title||r.fields.Name||'Untitled'}</p>
+        <p class="dc-sub">${r.fields.Year||r.fields.Date||''}</p>
+      </div>`).join('')||'<p style="color:var(--ink2)">No portfolio images found.</p>';
+    document.getElementById('conflictsGrid').innerHTML=confs.records.slice(0,10).map(r=>`
+      <div class="conflict-item">
+        <p class="ci-ttl">${r.fields.Title||r.fields.Name||'Conflict Record'}</p>
+        <p class="ci-sub">${r.fields.Status||'Under Review'} · ${r.fields.Date||r.fields.Created||'—'}</p>
+      </div>`).join('')||'<p style="color:var(--ink2)">No conflict records found.</p>';
+    document.getElementById('rightsContent').innerHTML=`
+      <div class="rights-block">
+        <p class="rb-num">Article 53 — EU AI Act</p>
+        <h3 class="rb-h">Opt-Out from Training Data</h3>
+        <p class="rb-p">Request formal removal of your work from AI training datasets.</p>
+        <button class="btn-main" style="margin-top:18px;display:inline-block">Generate Opt-Out Letter</button>
+      </div>
+      <div class="rights-block">
+        <p class="rb-num">Article 13 — EU AI Act</p>
+        <h3 class="rb-h">Transparency Disclosure</h3>
+        <p class="rb-p">Request a disclosure from AI developers about use of your work in their pipeline.</p>
+        <button class="btn-main" style="margin-top:18px;display:inline-block">Request Disclosure</button>
+      </div>
+      <div class="rights-block">
+        <p class="rb-num">Article 86 — EU AI Act</p>
+        <h3 class="rb-h">Right to Explanation</h3>
+        <p class="rb-p">Obtain a human-readable explanation of AI decisions affecting your work.</p>
+        <button class="btn-main" style="margin-top:18px;display:inline-block">Request Explanation</button>
+      </div>`;
+  }catch(err){
+    stats.innerHTML='<p style="color:var(--ink2);font-size:.88rem">Could not load data. Check your connection.</p>';
+  }
 }
 
 // ─── CHATBOT ──────────────────────────────────
-const cbQA = [
+const cbQA=[
   [/passport|style passport/i,'Your Style Passport documents your unique artistic fingerprint — color palettes, linework, composition. It serves as legal evidence if your style is ever copied by AI.'],
   [/opt.?out|article 53|training/i,'Under Article 53 of the EU AI Act, you can formally request that AI companies remove your work from training datasets. SIP generates these legally-compliant letters for you.'],
   [/detect|ai.?generat|check/i,'Upload any AI-generated image to our detection tool. We analyze stylistic fingerprints and flag overlap with your documented portfolio.'],
@@ -1068,26 +1196,21 @@ const cbQA = [
   [/rights|what can i|protection/i,'You have three key rights: (1) Opt-out from AI training (Art. 53), (2) Transparency about usage (Art. 13), (3) Right to explanation (Art. 86).'],
   [/illustrator|artist|creator/i,'SIP is built for illustrators. Your style is years of craft — not aesthetic preference, but creative identity.'],
   [/berlin|macromedia|thesis/i,'SIP was developed as a bachelor thesis at Macromedia University of Applied Sciences, Berlin, 2026 by Cholponai Kalybaeva.'],
-  [/register|join|sign up/i,"Scroll down to the registration form — it's free and takes under two minutes. After submitting, log in with your email to access your passport."],
-  [/login|log in|access/i,"Click 'Log In' in the top navigation and enter the email you registered with. Your dashboard loads automatically."],
+  [/register|join|sign up/i,"Click 'Claim Your Passport' to register. It's free and takes under two minutes."],
   [/hello|hi|hey/i,"Hello! I'm the SIP Assistant. Ask me about your rights as an illustrator, the EU AI Act, or how SIP works."],
 ];
-const cbDefault = "Great question. SIP focuses on illustrator rights under the EU AI Act. Could you rephrase that about your style, rights, or the platform?";
+const cbDefault="Great question. SIP focuses on illustrator rights under the EU AI Act. Could you rephrase that about your style, rights, or the platform?";
 
-function toggleChat() { document.getElementById('cbWin').classList.toggle('open'); }
-function cbSend() {
-  const inp = document.getElementById('cbIn');
-  const msgs = document.getElementById('cbMsgs');
-  const text = inp.value.trim();
-  if (!text) return;
-  msgs.innerHTML += `<div class="msg-usr">${text}</div>`;
-  inp.value = '';
-  const match = cbQA.find(([re]) => re.test(text));
-  setTimeout(() => {
-    msgs.innerHTML += `<div class="msg-bot">${match ? match[1] : cbDefault}</div>`;
-    msgs.scrollTop = msgs.scrollHeight;
-  }, 380);
-  msgs.scrollTop = msgs.scrollHeight;
+function toggleChat(){document.getElementById('cbWin').classList.toggle('open')}
+function cbSend(){
+  const inp=document.getElementById('cbIn');
+  const msgs=document.getElementById('cbMsgs');
+  const text=inp.value.trim();if(!text)return;
+  msgs.innerHTML+=`<div class="msg-usr">${text}</div>`;
+  inp.value='';
+  const match=cbQA.find(([re])=>re.test(text));
+  setTimeout(()=>{msgs.innerHTML+=`<div class="msg-bot">${match?match[1]:cbDefault}</div>`;msgs.scrollTop=msgs.scrollHeight},380);
+  msgs.scrollTop=msgs.scrollHeight;
 }
 </script>
 </body>
