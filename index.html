@@ -10,10 +10,10 @@
 /* ─── RESET & TOKENS ─────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#FAF8F5; --bg2:#F5F0FA; --bg3:#EDE6F8;
-  --ink:#1A0828; --ink2:rgba(26,8,40,.6); --ink3:rgba(26,8,40,.3);
-  --pm:#B0579A; --pm2:rgba(176,87,154,.14); --pu:#7A2A90;
-  --gd:#C4943A; --rule:rgba(26,8,40,.07);
+  --bg:#0F0A1A; --bg2:#160D28; --bg3:#1C1035;
+  --ink:#FAF8F5; --ink2:rgba(250,248,245,.65); --ink3:rgba(250,248,245,.35);
+  --pm:#C86AB0; --pm2:rgba(200,106,176,.18); --pu:#9040B0;
+  --gd:#E8B850; --tl:#5EC8C0; --cr:#E87878; --rule:rgba(255,255,255,.08);
   --ease:cubic-bezier(.22,1,.36,1);
   --f:'Atkinson Hyperlegible',Arial,sans-serif;
 }
@@ -26,7 +26,7 @@ button{font-family:var(--f);cursor:none}
 
 /* ─── CURSOR ──────────────────────────────────────── */
 #cur-dot,#cur-ring{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transition:width .18s,height .18s,opacity .2s}
-#cur-dot{width:7px;height:7px;background:var(--pm);transform:translate(-50%,-50%)}
+#cur-dot{width:7px;height:7px;background:#E87878;transform:translate(-50%,-50%);transition:background .15s}
 #cur-ring{width:36px;height:36px;border:1.5px solid rgba(176,87,154,.55);transform:translate(-50%,-50%)}
 
 /* ─── NAV ────────────────────────────────────────── */
@@ -34,9 +34,9 @@ nav{
   position:fixed;top:0;left:0;right:0;z-index:900;
   display:flex;align-items:center;justify-content:space-between;
   padding:18px 48px;
-  background:rgba(250,248,245,.88);
+  background:rgba(15,10,26,.82);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--rule);
+  border-bottom:1px solid rgba(255,255,255,.07);
 }
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
 .logo-icon{width:34px;height:30px;flex-shrink:0}
@@ -44,7 +44,7 @@ nav{
 .logo-text{font-weight:700;font-size:1.1rem;letter-spacing:.04em;color:var(--ink)}
 .logo-sub{font-size:.6rem;letter-spacing:.14em;color:var(--pm);text-transform:uppercase;margin-top:2px}
 .nav-links{display:flex;gap:32px;list-style:none}
-.nav-links a{font-size:.8rem;letter-spacing:.07em;color:var(--ink2);text-transform:uppercase;transition:color .2s}
+.nav-links a{font-size:.8rem;letter-spacing:.07em;color:rgba(250,248,245,.55);text-transform:uppercase;transition:color .2s}
 .nav-links a:hover{color:var(--pm)}
 .nav-cta{background:var(--pm);color:#fff;border:none;padding:9px 22px;font-size:.78rem;letter-spacing:.07em;border-radius:2px;text-transform:uppercase;transition:background .2s}
 .nav-cta:hover{background:var(--pu)}
@@ -57,7 +57,7 @@ nav{
   gap:20px;
   padding:78px 0 52px; /* 78px = nav height + breathing room */
   background:radial-gradient(ellipse 72% 65% at 50% 38%,
-    rgba(200,168,216,.22) 0%,rgba(240,184,200,.1) 42%,var(--bg) 100%);
+    rgba(150,60,200,.28) 0%,rgba(80,30,160,.14) 42%,var(--bg) 100%);
 }
 /* Paper texture overlay */
 .hero::before{
@@ -131,9 +131,9 @@ nav{
 .eu-badge{
   position:absolute;top:88px;right:48px;
   font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
-  border:1px solid rgba(176,87,154,.28);padding:5px 12px;
+  border:1px solid rgba(200,106,176,.35);padding:5px 12px;
   color:var(--pm);z-index:6;
-  background:rgba(255,255,255,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:rgba(15,10,26,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   animation:fadeSlideUp 1.2s var(--ease) .4s both;
 }
 /* Vertical aside — right edge */
@@ -175,7 +175,7 @@ nav{
   background:linear-gradient(90deg,transparent,rgba(176,87,154,.38),transparent);
 }
 .ht-eye-text{
-  font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3);
+  font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:rgba(250,248,245,.4);
 }
 
 /* — "Identity," — large italic, clean, no blend-mode */
@@ -191,7 +191,7 @@ nav{
 .ht-sub{
   display:block;
   font-size:clamp(1.4rem,3vw,3.4rem);
-  font-weight:700;color:var(--ink);
+  font-weight:700;color:#FAF8F5;
   letter-spacing:-.028em;line-height:1.08;
   margin-top:3px;margin-bottom:22px;
 }
@@ -213,55 +213,55 @@ nav{
 
 /* ─── MARQUEE ─────────────────────────────────────── */
 .marquee{
-  padding:13px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
-  overflow:hidden;background:var(--bg2);position:relative;z-index:10;
+  padding:13px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);
+  overflow:hidden;background:rgba(255,255,255,.03);position:relative;z-index:10;
 }
 .mq-track{
   display:flex;gap:52px;white-space:nowrap;
   animation:mqScroll 30s linear infinite;
 }
-.mq-track span{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);flex-shrink:0}
+.mq-track span{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(250,248,245,.35);flex-shrink:0}
 .mq-track .dot{color:var(--pm);font-size:1rem;line-height:1}
 @keyframes mqScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* ─── FEATURES ────────────────────────────────────── */
 .features{
   padding:120px 48px;
-  background:linear-gradient(158deg,#FAF5FF 0%,#FFF6FA 50%,#F5F0FA 100%);
+  background:linear-gradient(158deg,#0D0820 0%,#120A28 50%,#0A0D20 100%);
   position:relative;overflow:hidden;
 }
 .features::before{
   content:'';position:absolute;top:-220px;left:50%;transform:translateX(-50%);
   width:900px;height:900px;border-radius:50%;
-  background:radial-gradient(circle,rgba(200,168,216,.15) 0%,transparent 68%);
+  background:radial-gradient(circle,rgba(150,60,220,.12) 0%,transparent 68%);
   pointer-events:none;
 }
 .feat-hd{text-align:center;margin-bottom:68px}
-.feat-hd h2{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-.025em;line-height:1.1}
-.feat-hd p{font-size:.95rem;color:var(--ink2);max-width:540px;margin:18px auto 0;line-height:1.72}
+.feat-hd h2{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-.025em;line-height:1.1;color:#FAF8F5}
+.feat-hd p{font-size:.95rem;color:rgba(250,248,245,.55);max-width:540px;margin:18px auto 0;line-height:1.72}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;max-width:1160px;margin:0 auto}
 .feat-card{
   padding:38px 34px;position:relative;overflow:hidden;
-  background:rgba(255,255,255,.62);
+  background:rgba(255,255,255,.04);
   backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,255,255,.9);
-  box-shadow:0 4px 28px rgba(120,50,170,.05),inset 0 1px 0 rgba(255,255,255,.96);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 4px 28px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);
   transition:transform .32s var(--ease),box-shadow .32s var(--ease);
 }
 .feat-card::before{
   content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(135deg,rgba(255,255,255,.38) 0%,transparent 58%);
 }
-.feat-card:hover{transform:translateY(-5px);box-shadow:0 14px 48px rgba(120,50,170,.1)}
+.feat-card:hover{transform:translateY(-5px);box-shadow:0 14px 48px rgba(120,50,200,.2),0 0 40px rgba(94,200,192,.08)}
 .fc-icon{font-size:1.7rem;margin-bottom:18px;display:block}
-.fc-num{position:absolute;top:26px;right:30px;font-size:.6rem;letter-spacing:.15em;color:var(--ink3);text-transform:uppercase}
-.fc-h{font-size:1.1rem;font-weight:700;margin-bottom:11px;color:var(--ink);letter-spacing:-.015em}
-.fc-p{font-size:.86rem;color:var(--ink2);line-height:1.67}
+.fc-num{position:absolute;top:26px;right:30px;font-size:.6rem;letter-spacing:.15em;color:rgba(250,248,245,.25);text-transform:uppercase}
+.fc-h{font-size:1.1rem;font-weight:700;margin-bottom:11px;color:#FAF8F5;letter-spacing:-.015em}
+.fc-p{font-size:.86rem;color:rgba(250,248,245,.5);line-height:1.67}
 .fc-tag{display:inline-block;margin-top:18px;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;background:var(--pm2);color:var(--pm);padding:4px 10px;border-radius:2px}
 
 /* ─── QUOTE ──────────────────────────────────────── */
 .q-band{
-  padding:90px 48px;background:var(--ink);text-align:center;
+  padding:90px 48px;background:linear-gradient(135deg,#1A0428 0%,#0A1028 50%,#1A0428 100%);text-align:center;
   position:relative;overflow:hidden;
 }
 .q-band::before{
@@ -271,29 +271,31 @@ nav{
 }
 .q-text{
   font-size:clamp(1.45rem,3.2vw,2.7rem);font-style:italic;font-weight:400;
-  color:#FAF8F5;max-width:860px;margin:0 auto;letter-spacing:-.02em;line-height:1.42;
+  background:linear-gradient(120deg,#FAF8F5 30%,rgba(200,106,176,.9) 70%,rgba(94,200,192,.9) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  max-width:860px;margin:0 auto;letter-spacing:-.02em;line-height:1.42;
 }
 .q-attr{margin-top:26px;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.42)}
 
 /* ─── EU ACT ──────────────────────────────────────── */
-.eu-act{padding:110px 48px;background:var(--bg)}
+.eu-act{padding:110px 48px;background:linear-gradient(160deg,#0A0D20 0%,#0F0A1A 100%)}
 .eu-act-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;max-width:1160px;margin:0 auto}
-.eu-left h2{font-size:clamp(1.8rem,3.4vw,2.9rem);font-weight:700;letter-spacing:-.025em;line-height:1.15;margin-bottom:22px}
-.eu-left p{font-size:.92rem;color:var(--ink2);line-height:1.77;margin-bottom:14px}
+.eu-left h2{font-size:clamp(1.8rem,3.4vw,2.9rem);font-weight:700;letter-spacing:-.025em;line-height:1.15;margin-bottom:22px;color:#FAF8F5}
+.eu-left p{font-size:.92rem;color:rgba(250,248,245,.55);line-height:1.77;margin-bottom:14px}
 .eu-right{display:flex;flex-direction:column;gap:15px}
 .art-card{
   padding:22px 26px;border-left:3px solid var(--pm);
-  background:rgba(255,255,255,.68);
+  background:rgba(255,255,255,.04);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-top:1px solid rgba(255,255,255,.92);
-  border-right:1px solid rgba(255,255,255,.92);
-  border-bottom:1px solid rgba(255,255,255,.92);
+  border-top:1px solid rgba(255,255,255,.08);
+  border-right:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
   transition:transform .25s var(--ease);
 }
 .art-card:hover{transform:translateX(4px)}
 .art-num{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--pm);margin-bottom:7px}
-.art-h{font-size:.93rem;font-weight:700;color:var(--ink);margin-bottom:5px}
-.art-p{font-size:.8rem;color:var(--ink2);line-height:1.62}
+.art-h{font-size:.93rem;font-weight:700;color:#FAF8F5;margin-bottom:5px}
+.art-p{font-size:.8rem;color:rgba(250,248,245,.5);line-height:1.62}
 
 /* ─── PASSPORT ────────────────────────────────────── */
 .passport-band{padding:110px 48px;background:var(--ink);overflow:hidden}
@@ -327,18 +329,45 @@ nav{
 }
 
 /* ─── REGISTER ────────────────────────────────────── */
-.register{padding:110px 48px;background:linear-gradient(160deg,#F5EEFA 0%,#FFF0F5 100%)}
+.register{padding:110px 48px;background:linear-gradient(160deg,#0D0820 0%,#0A0D20 100%)}
 .reg-inner{max-width:880px;margin:0 auto}
-.reg-inner h2{font-size:clamp(1.8rem,3.4vw,3rem);font-weight:700;letter-spacing:-.025em;margin-bottom:14px}
-.reg-inner .sub{font-size:.92rem;color:var(--ink2);margin-bottom:44px;line-height:1.65}
+.reg-inner h2{font-size:clamp(1.8rem,3.4vw,3rem);font-weight:700;letter-spacing:-.025em;margin-bottom:14px;color:#FAF8F5}
+.reg-inner .sub{font-size:.92rem;color:rgba(250,248,245,.55);margin-bottom:44px;line-height:1.65}
 .tally-wrap{
-  background:rgba(255,255,255,.62);
+  background:rgba(255,255,255,.04);
   backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
-  border:1px solid rgba(255,255,255,.9);
-  padding:38px;box-shadow:0 4px 24px rgba(120,50,170,.05);
+  border:1px solid rgba(255,255,255,.08);
+  padding:38px;box-shadow:0 4px 24px rgba(0,0,0,.3);
 }
 
-/* chatbot handled by Chatbase embed */
+/* ─── CHATBOT ─────────────────────────────────────── */
+#chatBot{position:fixed;bottom:30px;right:30px;z-index:800}
+.cb-bubble{
+  width:50px;height:50px;border-radius:50%;
+  background:var(--pm);border:none;color:#fff;
+  font-size:1.3rem;box-shadow:0 4px 20px rgba(176,87,154,.38);
+  transition:transform .2s;display:flex;align-items:center;justify-content:center;
+}
+.cb-bubble:hover{transform:scale(1.08)}
+.cb-win{
+  display:none;width:310px;
+  background:rgba(250,248,245,.97);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 16px 60px rgba(26,8,40,.16);
+  margin-bottom:10px;overflow:hidden;
+}
+.cb-win.open{display:block}
+.cb-head{background:var(--pm);color:#fff;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
+.cb-head h3{font-size:.83rem;font-weight:700}
+.cb-close{background:none;border:none;color:#fff;font-size:1.2rem;line-height:1}
+.cb-msgs{height:230px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px}
+.msg-bot{max-width:88%;font-size:.8rem;line-height:1.52;padding:7px 11px;background:rgba(176,87,154,.1);border-radius:0 11px 11px 11px;color:var(--ink)}
+.msg-usr{max-width:88%;font-size:.8rem;line-height:1.52;padding:7px 11px;background:var(--pm);color:#fff;border-radius:11px 11px 0 11px;margin-left:auto}
+.cb-input{display:flex;border-top:1px solid var(--rule)}
+.cb-input input{flex:1;border:none;padding:11px 13px;background:transparent;font-size:.8rem;font-family:var(--f);color:var(--ink)}
+.cb-input input:focus{outline:none}
+.cb-input button{background:var(--pm);color:#fff;border:none;padding:0 15px;font-size:.9rem}
 
 /* ─── INNER PAGES ─────────────────────────────────── */
 .page{display:none;min-height:100svh;padding:110px 48px 80px;background:var(--bg)}
@@ -374,19 +403,19 @@ nav{
 .modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(26,8,40,.58);backdrop-filter:blur(8px);align-items:center;justify-content:center}
 .modal.open{display:flex}
 .modal-box{
-  background:rgba(250,248,245,.98);backdrop-filter:blur(24px);
+  background:rgba(20,12,36,.98);backdrop-filter:blur(24px);
   border:1px solid rgba(255,255,255,.92);
   width:min(420px,90vw);padding:44px 38px;
   box-shadow:0 32px 80px rgba(26,8,40,.18);position:relative;
 }
-.modal-box h2{font-size:1.45rem;font-weight:700;margin-bottom:7px;letter-spacing:-.02em}
-.modal-box .sub{font-size:.85rem;color:var(--ink2);margin-bottom:28px}
-.close-modal{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.4rem;color:var(--ink3)}
+.modal-box h2{font-size:1.45rem;font-weight:700;margin-bottom:7px;letter-spacing:-.02em;color:#FAF8F5}
+.modal-box .sub{font-size:.85rem;color:rgba(250,248,245,.55);margin-bottom:28px}
+.close-modal{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.4rem;color:rgba(250,248,245,.4)}
 .form-grp{margin-bottom:18px}
-.form-grp label{display:block;font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink2);margin-bottom:7px}
+.form-grp label{display:block;font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:rgba(250,248,245,.5);margin-bottom:7px}
 .form-grp input,.form-grp select{
-  width:100%;border:1.5px solid rgba(26,8,40,.14);padding:10px 13px;
-  font-size:.86rem;font-family:var(--f);background:rgba(255,255,255,.7);color:var(--ink);
+  width:100%;border:1.5px solid rgba(255,255,255,.12);padding:10px 13px;
+  font-size:.86rem;font-family:var(--f);background:rgba(255,255,255,.06);color:#FAF8F5;
   outline:none;transition:border-color .2s;
 }
 .form-grp input:focus,.form-grp select:focus{border-color:var(--pm)}
@@ -398,11 +427,12 @@ nav{
 
 /* ─── FOOTER ──────────────────────────────────────── */
 footer{
-  padding:56px 48px;background:var(--ink);color:rgba(250,248,245,.45);
+  padding:56px 48px;background:#080510;color:rgba(250,248,245,.45);
   display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;
 }
 footer p{font-size:.78rem;letter-spacing:.04em}
 .foot-th{font-style:italic;color:rgba(250,248,245,.28);font-size:.73rem}
+
 
 /* ─── DASHBOARD DARK THEME ───────────────────────── */
 #page-dashboard{
@@ -414,24 +444,25 @@ footer p{font-size:.78rem;letter-spacing:.04em}
   background:radial-gradient(ellipse 70% 50% at 80% 15%,rgba(176,87,154,.15) 0%,transparent 65%),
     radial-gradient(ellipse 50% 40% at 15% 85%,rgba(120,60,200,.1) 0%,transparent 60%);
 }
-#page-dashboard>.back-btn,#page-dashboard>.page-head,
-#page-dashboard>.dash-tabs,#page-dashboard>[id^="tab"]{position:relative;z-index:1}
 #page-dashboard .back-btn{
+  position:relative;z-index:1;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
   color:rgba(250,248,245,.55);border-radius:2px;padding:7px 16px;
   font-size:.72rem;letter-spacing:.1em;transition:all .2s;
 }
 #page-dashboard .back-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+#page-dashboard .page-head{position:relative;z-index:1}
 #page-dashboard .page-head h1{
   color:#FAF8F5;
   background:linear-gradient(110deg,#fff 20%,rgba(200,140,220,.95) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 #page-dashboard .page-head p{color:rgba(250,248,245,.45)}
-#page-dashboard .dash-tabs{border-bottom-color:rgba(255,255,255,.08)}
+#page-dashboard .dash-tabs{position:relative;z-index:1;border-bottom-color:rgba(255,255,255,.08)}
 #page-dashboard .dt{color:rgba(250,248,245,.3)}
 #page-dashboard .dt.active{color:var(--pm);border-bottom-color:var(--pm)}
 #page-dashboard .dt:hover:not(.active){color:rgba(250,248,245,.65)}
+#page-dashboard [id^="tab-"]{position:relative;z-index:1}
 #page-dashboard .data-card{
   background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.09);
   box-shadow:0 0 24px rgba(176,87,154,.07),inset 0 1px 0 rgba(255,255,255,.05);
@@ -439,9 +470,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 #page-dashboard .dc-label{color:rgba(250,248,245,.35)}
 #page-dashboard .dc-val{color:#FAF8F5}
 #page-dashboard .dc-sub{color:rgba(250,248,245,.42)}
-#page-dashboard .rights-block{
-  background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.09);
-}
+#page-dashboard .rights-block{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.09)}
 #page-dashboard .rb-num{color:var(--pm)}
 #page-dashboard .rb-h{color:#FAF8F5}
 #page-dashboard .rb-p{color:rgba(250,248,245,.55)}
@@ -450,15 +479,12 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 #page-dashboard .ci-sub{color:rgba(250,248,245,.45)}
 .dash-glow-card{
   background:linear-gradient(135deg,#2A0E40,#1A0828,#3A1258);
-  border:1px solid rgba(176,87,154,.3);
-  padding:36px;position:relative;overflow:hidden;
+  border:1px solid rgba(176,87,154,.3);padding:36px;position:relative;overflow:hidden;
   box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 50px rgba(176,87,154,.12),inset 0 1px 0 rgba(255,255,255,.06);
 }
 .dash-glow-card::before{
-  content:'';position:absolute;top:-50%;right:-10%;
-  width:200%;height:250%;border-radius:50%;
-  background:radial-gradient(circle,rgba(176,87,154,.13) 0%,transparent 60%);
-  pointer-events:none;
+  content:'';position:absolute;top:-50%;right:-10%;width:200%;height:250%;border-radius:50%;
+  background:radial-gradient(circle,rgba(176,87,154,.13) 0%,transparent 60%);pointer-events:none;
 }
 
 /* ─── REVEAL ──────────────────────────────────────── */
@@ -733,19 +759,19 @@ footer p{font-size:.78rem;letter-spacing:.04em}
       <span class="fc-icon">🛂</span><span class="fc-num">01</span>
       <h3 class="fc-h">Style Passport</h3>
       <p class="fc-p">A verified record of your artistic fingerprint — color palettes, linework patterns, compositional habits. Timestamped and immutable.</p>
-      <span class="fc-tag">Documentation</span>
+      <span class="fc-tag" style="background:rgba(200,106,176,.18);color:#C86AB0">Documentation</span>
     </div>
     <div class="feat-card reveal" style="transition-delay:.09s">
       <span class="fc-icon">🔍</span><span class="fc-num">02</span>
       <h3 class="fc-h">AI Detection</h3>
       <p class="fc-p">Upload any AI-generated image to detect stylistic overlap with your documented work. Powered by EU-compliant analysis.</p>
-      <span class="fc-tag">Detection</span>
+      <span class="fc-tag" style="background:rgba(94,200,192,.14);color:#5EC8C0">Detection</span>
     </div>
     <div class="feat-card reveal" style="transition-delay:.18s">
       <span class="fc-icon">⚖️</span><span class="fc-num">03</span>
       <h3 class="fc-h">Opt-Out Rights</h3>
       <p class="fc-p">Generate legally compliant opt-out requests under Article 53 of the EU AI Act, directly addressed to AI developers.</p>
-      <span class="fc-tag">Legal Action</span>
+      <span class="fc-tag" style="background:rgba(232,184,80,.14);color:#E8B850">Legal Action</span>
     </div>
   </div>
 </section>
@@ -765,18 +791,18 @@ footer p{font-size:.78rem;letter-spacing:.04em}
       <p>SIP translates complex legal language into tools you can actually use — because understanding your rights shouldn't require a law degree.</p>
     </div>
     <div class="eu-right">
-      <div class="art-card reveal">
-        <p class="art-num">Article 53</p>
+      <div class="art-card reveal" style="border-left-color:#C86AB0">
+        <p class="art-num" style="color:#C86AB0">Article 53</p>
         <h3 class="art-h">Opt-Out from Training Data</h3>
         <p class="art-p">Creators may formally request exclusion of their work from AI training datasets. SIP automates this process.</p>
       </div>
-      <div class="art-card reveal" style="transition-delay:.1s">
-        <p class="art-num">Article 13</p>
+      <div class="art-card reveal" style="transition-delay:.1s;border-left-color:#5EC8C0">
+        <p class="art-num" style="color:#5EC8C0">Article 13</p>
         <h3 class="art-h">Transparency Requirements</h3>
         <p class="art-p">AI systems must disclose when and how creative works were used. SIP logs and tracks these disclosures.</p>
       </div>
-      <div class="art-card reveal" style="transition-delay:.2s">
-        <p class="art-num">Article 86</p>
+      <div class="art-card reveal" style="transition-delay:.2s;border-left-color:#E8B850">
+        <p class="art-num" style="color:#E8B850">Article 86</p>
         <h3 class="art-h">Right to Explanation</h3>
         <p class="art-p">You have the right to understand how AI decisions affecting your work were made. SIP surfaces these explanations.</p>
       </div>
@@ -859,10 +885,7 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 
 <!-- ─── CHATBASE AI CHATBOT ──────────────────── -->
 <script>
-window.embeddedChatbotConfig = {
-  chatbotId: "aqFjYzP16-I9ZmsiqyWcv",
-  domain: "www.chatbase.co"
-}
+window.embeddedChatbotConfig={chatbotId:"aqFjYzP16-I9ZmsiqyWcv",domain:"www.chatbase.co"}
 </script>
 <script src="https://www.chatbase.co/embed.min.js" chatbotId="aqFjYzP16-I9ZmsiqyWcv" domain="www.chatbase.co" defer></script>
 
@@ -879,22 +902,44 @@ async function at(t,p=''){
   return r.json();
 }
 
-// ─── CURSOR ──────────────────────────────────
+// ─── CURSOR + PAINT ──────────────────────────
 (function(){
   const dot=document.getElementById('cur-dot');
   const ring=document.getElementById('cur-ring');
   let rx=0,ry=0,dx=0,dy=0;
+  // Paint palette — artist colours
+  const palette=['#E87878','#E8B850','#78C8E8','#B878E8','#78E8B0','#E878C0','#78B0E8','#E8A050','#A0E878','#C878E8'];
+  let pIdx=0,lastPaint=0,paintCount=0;
   document.addEventListener('mousemove',e=>{
     dx=e.clientX;dy=e.clientY;
     dot.style.left=dx+'px';dot.style.top=dy+'px';
+    // Paint splat every 35ms, max 60 at a time
+    const now=Date.now();
+    if(now-lastPaint<35||paintCount>60)return;
+    lastPaint=now;paintCount++;
+    const color=palette[pIdx%palette.length];pIdx++;
+    dot.style.background=color;
+    const sz=3+Math.random()*9;
+    const ox=(Math.random()-.5)*10,oy=(Math.random()-.5)*10;
+    const rx2=30+Math.random()*70;
+    const splat=document.createElement('div');
+    splat.style.cssText='position:fixed;pointer-events:none;z-index:9997;border-radius:'+rx2+'% '+(100-rx2)+'% '+rx2+'% '+(100-rx2)+'%;'
+      +'left:'+(e.clientX+ox-sz/2)+'px;top:'+(e.clientY+oy-sz/2)+'px;'
+      +'width:'+sz+'px;height:'+sz+'px;background:'+color+';opacity:.72;'
+      +'transition:opacity 1.1s ease,transform 1.1s ease;transform:scale(1)';
+    document.body.appendChild(splat);
+    requestAnimationFrame(()=>{splat.style.opacity='0';splat.style.transform='scale(.2)'});
+    setTimeout(()=>{splat.remove();paintCount--},1150);
   });
   (function loop(){
     rx+=(dx-rx)*.11;ry+=(dy-ry)*.11;
     ring.style.left=rx+'px';ring.style.top=ry+'px';
+    // Ring colour cycles with paint
+    ring.style.borderColor=palette[pIdx%palette.length]+'99';
     requestAnimationFrame(loop);
   })();
   document.querySelectorAll('a,button,input,select,iframe').forEach(el=>{
-    el.addEventListener('mouseenter',()=>{ring.style.width='54px';ring.style.height='54px';ring.style.opacity='.38'});
+    el.addEventListener('mouseenter',()=>{ring.style.width='54px';ring.style.height='54px';ring.style.opacity='.45'});
     el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.opacity='1'});
   });
 })();
@@ -1055,11 +1100,12 @@ document.getElementById('authModal').addEventListener('click',e=>{if(e.target===
 
 function loginHTML(){return`
   <h2 id="modalTitle">Welcome Back</h2>
-  <p class="sub">Enter the email you registered with.</p>
-  <div class="form-grp"><label for="li-e">Email</label><input id="li-e" type="email" placeholder="you@studio.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
-  <p class="auth-err" id="li-err" style="display:none"></p>
-  <button class="form-sub" id="li-btn" onclick="doLogin()">Access My Passport</button>
-  <div class="form-switch">Not registered? <button onclick="closeModal();document.getElementById('register').scrollIntoView({behavior:'smooth'})">Register here</button></div>
+  <p class="sub">Sign in to your Style Passport</p>
+  <div class="form-grp"><label for="li-e">Email</label><input id="li-e" type="email" placeholder="you@studio.com"></div>
+  <div class="form-grp"><label for="li-p">Password</label><input id="li-p" type="password" placeholder="••••••••"></div>
+  <p class="auth-err" id="li-err">Please enter your credentials.</p>
+  <button class="form-sub" onclick="doLogin()">Sign In</button>
+  <div class="form-switch">No account? <button onclick="openModal('register')">Register free</button></div>
 `}
 function registerHTML(){return`
   <h2 id="modalTitle">Claim Your Passport</h2>
@@ -1080,37 +1126,12 @@ function registerHTML(){return`
   <div class="form-switch">Already registered? <button onclick="openModal('login')">Sign in</button></div>
 `}
 
-async function doLogin(){
-  const emailInput=document.getElementById('li-e');
-  const errEl=document.getElementById('li-err');
-  const btn=document.getElementById('li-btn');
-  const email=emailInput.value.trim().toLowerCase();
-  errEl.style.display='none';
-  if(!email||!email.includes('@')){errEl.textContent='Enter a valid email.';errEl.style.display='block';return;}
-  btn.textContent='Looking up…';btn.disabled=true;
-  try{
-    const formula=encodeURIComponent('{Email}="'+email+'"');
-    const data=await at('Illustrators','?filterByFormula='+formula+'&maxRecords=1');
-    const record=data.records&&data.records[0];
-    if(!record){
-      errEl.textContent='No registration found. Submit the form below first.';
-      errEl.style.display='block';btn.textContent='Access My Passport';btn.disabled=false;return;
-    }
-    const f=record.fields;
-    user={
-      name:f['Full Name']||f.Name||email.split('@')[0],
-      email:f.Email||email,
-      spec:f.Spec||f.Specialization||f['Illustration Style']||'Illustrator',
-      style:f['Style Description']||f.Style||f.StyleDescription||'',
-      portfolio:f.Portfolio||f['Portfolio URL']||f.PortfolioURL||'',
-      passportId:f['SIP ID']||f.PassportID||('SIP-'+new Date().getFullYear()+'-'+(email.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX')),
-      registered:f.Registered||f['Registration Date']||f.RegistrationDate||new Date().toLocaleDateString('en-GB'),
-    };
-    closeModal();updateNav();showPage('dashboard');
-  }catch(err){
-    errEl.textContent='Connection error. Try again.';errEl.style.display='block';console.error(err);
-  }
-  btn.textContent='Access My Passport';btn.disabled=false;
+function doLogin(){
+  const e=document.getElementById('li-e').value.trim();
+  const p=document.getElementById('li-p').value;
+  if(!e||!p){document.getElementById('li-err').style.display='block';return}
+  user={name:e.split('@')[0],email:e,spec:'Illustrator'};
+  closeModal();updateNav();showPage('dashboard');
 }
 function doRegister(){
   const n=document.getElementById('ri-n').value.trim();
@@ -1132,112 +1153,85 @@ function updateNav(){
   if(dw)dw.textContent=`Welcome back, ${user.name.split(' ')[0]}. Your passport is active.`;
 }
 
+
 // ─── DASHBOARD ────────────────────────────────
 async function loadDashboard(){
   showTab('overview');
-  const over=document.getElementById('tab-overview');
-  const stats=document.getElementById('dashStats');
-
-  // Auto-generate passport ID if not in Airtable
+  var over=document.getElementById('tab-overview');
+  var stats=document.getElementById('dashStats');
   if(user&&!user.passportId){
     user.passportId='SIP-'+new Date().getFullYear()+'-'+(user.email.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX');
   }
-  const pid=user?.passportId||'SIP-2026-XXX';
-
-  // Build futuristic passport hero card (once)
+  var pid=user&&user.passportId?user.passportId:'SIP-2026-XXX';
   if(!document.getElementById('passportHero')){
-    const hero=document.createElement('div');
+    var hero=document.createElement('div');
     hero.id='passportHero';
     hero.style.cssText='margin-bottom:40px;max-width:920px';
-    hero.innerHTML=`
-      <div class="dash-glow-card" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
-        <div style="position:relative;z-index:1">
-          <div style="font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-bottom:14px">SIP · Style Identity Passport</div>
-          <div style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:#FAF8F5;letter-spacing:-.025em;line-height:1">${user?.name||'Illustrator'}</div>
-          <div style="font-size:.85rem;color:rgba(250,248,245,.45);margin-top:6px">${user?.spec||'Illustrator'}</div>
-          <div style="margin-top:28px;display:flex;gap:32px;flex-wrap:wrap">
-            <div>
-              <div style="font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.3);margin-bottom:4px">Passport ID</div>
-              <div style="font-size:.82rem;color:rgba(250,248,245,.88);font-family:monospace;letter-spacing:.09em">${pid}</div>
-            </div>
-            <div>
-              <div style="font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.3);margin-bottom:4px">Registered</div>
-              <div style="font-size:.82rem;color:rgba(250,248,245,.75)">${user?.registered||new Date().toLocaleDateString('en-GB')}</div>
-            </div>
-            <div>
-              <div style="font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.3);margin-bottom:4px">Status</div>
-              <div style="font-size:.82rem;color:#6EE78A;font-weight:700">● Protected</div>
-            </div>
-          </div>
-          <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn-main" style="font-size:.72rem;padding:9px 20px" onclick="showTab('rights')">Rights Centre</button>
-            <button style="background:rgba(255,255,255,.08);color:rgba(250,248,245,.7);border:1px solid rgba(255,255,255,.15);padding:8px 20px;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;cursor:none" onclick="showTab('conflicts')">Conflicts</button>
-          </div>
-        </div>
-        <div style="flex-shrink:0;width:70px;height:70px;border-radius:50%;border:1.5px solid rgba(196,148,58,.5);display:flex;align-items:center;justify-content:center;color:rgba(196,148,58,.75);font-size:.46rem;letter-spacing:.09em;text-transform:uppercase;text-align:center;line-height:1.4">EU AI<br>Act<br>Art.53</div>
-      </div>
-    `;
+    var heroInner=document.createElement('div');
+    heroInner.className='dash-glow-card';
+    heroInner.style.cssText='display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center';
+    heroInner.innerHTML=''
+      +'<div style="position:relative;z-index:1">'
+      +'<div style="font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(250,248,245,.38);margin-bottom:14px">SIP · Style Identity Passport</div>'
+      +'<div style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:#FAF8F5;letter-spacing:-.025em;line-height:1">'+(user&&user.name?user.name:'Illustrator')+'</div>'
+      +'<div style="font-size:.85rem;color:rgba(250,248,245,.45);margin-top:6px">'+(user&&user.spec?user.spec:'Illustrator')+'</div>'
+      +'<div style="margin-top:28px;display:flex;gap:32px;flex-wrap:wrap">'
+      +'<div><div style="font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.3);margin-bottom:4px">Passport ID</div>'
+      +'<div style="font-size:.82rem;color:rgba(250,248,245,.88);font-family:monospace;letter-spacing:.09em">'+pid+'</div></div>'
+      +'<div><div style="font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.3);margin-bottom:4px">Registered</div>'
+      +'<div style="font-size:.82rem;color:rgba(250,248,245,.75)">'+(user&&user.registered?user.registered:new Date().toLocaleDateString('en-GB'))+'</div></div>'
+      +'<div><div style="font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.3);margin-bottom:4px">Status</div>'
+      +'<div style="font-size:.82rem;color:#6EE78A;font-weight:700">● Protected</div></div>'
+      +'</div>'
+      +'<div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">'
+      +'<button class="btn-main" style="font-size:.72rem;padding:9px 20px" onclick="showTab(\'rights\')">Rights Centre</button>'
+      +'<button style="background:rgba(255,255,255,.08);color:rgba(250,248,245,.7);border:1px solid rgba(255,255,255,.15);padding:8px 20px;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;cursor:none" onclick="showTab(\'conflicts\')">Conflicts</button>'
+      +'</div></div>'
+      +'<div style="flex-shrink:0;width:70px;height:70px;border-radius:50%;border:1.5px solid rgba(196,148,58,.5);display:flex;align-items:center;justify-content:center;color:rgba(196,148,58,.75);font-size:.46rem;letter-spacing:.09em;text-transform:uppercase;text-align:center;line-height:1.4">EU AI<br>Act<br>Art.53</div>';
+    hero.appendChild(heroInner);
     over.prepend(hero);
   }
-
   stats.innerHTML='<p style="color:rgba(250,248,245,.35);font-size:.85rem;padding:12px 0">Loading data…</p>';
-
   try{
-    const[illus,confs]=await Promise.all([
-      at('Illustrators'),at('Conflict Records')
-    ]);
-
-    stats.innerHTML=`
-      <div class="data-card" style="border-top:2px solid rgba(176,87,154,.5)">
-        <p class="dc-label">Passport ID</p>
-        <p class="dc-val" style="font-size:.9rem;font-family:monospace;letter-spacing:.06em">${pid}</p>
-      </div>
-      <div class="data-card">
-        <p class="dc-label">Specialization</p>
-        <p class="dc-val" style="font-size:1.1rem">${user?.spec||'Illustrator'}</p>
-      </div>
-      <div class="data-card">
-        <p class="dc-label">Registered</p>
-        <p class="dc-val" style="font-size:1.1rem">${user?.registered||'—'}</p>
-      </div>
-      <div class="data-card" style="border-top:2px solid rgba(110,231,138,.4)">
-        <p class="dc-label">EU AI Act Status</p>
-        <p class="dc-val" style="font-size:1.1rem;color:#6EE78A">Protected</p>
-      </div>
-    `;
-
-    document.getElementById('conflictsGrid').innerHTML=
-      (confs.records.length?confs.records.slice(0,10).map(r=>`
-        <div class="conflict-item">
-          <p class="ci-ttl">${r.fields.Title||r.fields.Name||'Conflict Record'}</p>
-          <p class="ci-sub">${r.fields.Status||'Under Review'} · ${r.fields.Date||r.fields.Created||'—'}</p>
-        </div>`).join('')
-      :'<p style="color:rgba(250,248,245,.4);margin-bottom:20px">No conflict records on file. If you discover an AI-generated image that mimics your style, document it here.</p>')
+    var results=await Promise.all([at('Illustrators'),at('Conflict Records')]);
+    var illus=results[0],confs=results[1];
+    stats.innerHTML=''
+      +'<div class="data-card" style="border-top:2px solid rgba(176,87,154,.5)">'
+      +'<p class="dc-label">Passport ID</p>'
+      +'<p class="dc-val" style="font-size:.9rem;font-family:monospace;letter-spacing:.06em">'+pid+'</p></div>'
+      +'<div class="data-card"><p class="dc-label">Specialization</p>'
+      +'<p class="dc-val" style="font-size:1.1rem">'+(user&&user.spec?user.spec:'Illustrator')+'</p></div>'
+      +'<div class="data-card"><p class="dc-label">Registered</p>'
+      +'<p class="dc-val" style="font-size:1.1rem">'+(user&&user.registered?user.registered:'—')+'</p></div>'
+      +'<div class="data-card" style="border-top:2px solid rgba(110,231,138,.4)">'
+      +'<p class="dc-label">EU AI Act Status</p>'
+      +'<p class="dc-val" style="font-size:1.1rem;color:#6EE78A">Protected</p></div>';
+    var conflictHtml=confs.records.length
+      ?confs.records.slice(0,10).map(function(r){
+          return '<div class="conflict-item"><p class="ci-ttl">'+(r.fields.Title||r.fields.Name||'Conflict Record')+'</p>'
+            +'<p class="ci-sub">'+(r.fields.Status||'Under Review')+' · '+(r.fields.Date||r.fields.Created||'—')+'</p></div>';
+        }).join('')
+      :'<p style="color:rgba(250,248,245,.4);margin-bottom:20px">No conflict records on file. If you discover an AI-generated image that mimics your style, document it here.</p>';
+    document.getElementById('conflictsGrid').innerHTML=conflictHtml
       +'<button class="btn-main" style="margin-top:20px;font-size:.78rem;padding:10px 24px;background:#9A2040" onclick="reportConflict()">Report a Conflict</button>';
-
-    document.getElementById('rightsContent').innerHTML=`
-      <div class="rights-block" style="margin-bottom:18px">
-        <p class="rb-num">Article 53 — EU AI Act</p>
-        <h3 class="rb-h">Opt-Out from Training Data</h3>
-        <p class="rb-p">Request formal removal of your work from AI training datasets. Your Passport ID <strong style="color:var(--pm)">${pid}</strong> will be referenced in the letter.</p>
-        <button class="btn-main" style="margin-top:18px;font-size:.78rem" onclick="generateLetter('optout')">Generate Opt-Out Letter</button>
-      </div>
-      <div class="rights-block" style="margin-bottom:18px">
-        <p class="rb-num">Article 13 — EU AI Act</p>
-        <h3 class="rb-h">Transparency Disclosure</h3>
-        <p class="rb-p">Request a disclosure from AI developers about how your work was used in their pipeline.</p>
-        <button class="btn-main" style="margin-top:18px;font-size:.78rem" onclick="generateLetter('transparency')">Request Disclosure</button>
-      </div>
-      <div class="rights-block">
-        <p class="rb-num">Article 86 — EU AI Act</p>
-        <h3 class="rb-h">Right to Explanation</h3>
-        <p class="rb-p">Obtain a human-readable explanation of AI decisions affecting your work.</p>
-        <button class="btn-main" style="margin-top:18px;font-size:.78rem" onclick="generateLetter('explanation')">Request Explanation</button>
-      </div>`;
-
+    document.getElementById('rightsContent').innerHTML=''
+      +'<div class="rights-block" style="margin-bottom:18px">'
+      +'<p class="rb-num">Article 53 — EU AI Act</p>'
+      +'<h3 class="rb-h">Opt-Out from Training Data</h3>'
+      +'<p class="rb-p">Request formal removal of your work from AI training datasets. Your Passport ID <strong style="color:var(--pm)">'+pid+'</strong> will be referenced in the letter.</p>'
+      +'<button class="btn-main" style="margin-top:18px;font-size:.78rem" onclick="generateLetter(\'optout\')">Generate Opt-Out Letter</button></div>'
+      +'<div class="rights-block" style="margin-bottom:18px">'
+      +'<p class="rb-num">Article 13 — EU AI Act</p>'
+      +'<h3 class="rb-h">Transparency Disclosure</h3>'
+      +'<p class="rb-p">Request a disclosure from AI developers about how your work was used in their pipeline.</p>'
+      +'<button class="btn-main" style="margin-top:18px;font-size:.78rem" onclick="generateLetter(\'transparency\')">Request Disclosure</button></div>'
+      +'<div class="rights-block">'
+      +'<p class="rb-num">Article 86 — EU AI Act</p>'
+      +'<h3 class="rb-h">Right to Explanation</h3>'
+      +'<p class="rb-p">Obtain a human-readable explanation of AI decisions affecting your work.</p>'
+      +'<button class="btn-main" style="margin-top:18px;font-size:.78rem" onclick="generateLetter(\'explanation\')">Request Explanation</button></div>';
   }catch(err){
-    stats.innerHTML='<p style="color:rgba(250,248,245,.4);font-size:.85rem">Could not load data. Check your connection.</p>';
-    console.error(err);
+    stats.innerHTML='<p style="color:rgba(250,248,245,.4);font-size:.85rem">Could not load data.</p>';
   }
 }
 
@@ -1254,80 +1248,76 @@ function generateLetter(type){
     transparency:'Transparency Disclosure — Article 13, EU AI Act',
     explanation:'Right to Explanation — Article 86, EU AI Act'
   };
-  var L={
-    optout:[
-      dt,'',
-      'To: AI Research and Compliance Team','',
+  var letters={
+    optout:[dt,'','To: AI Research and Compliance Team','',
       'Subject: Formal Opt-Out from AI Training Dataset — Article 53, EU AI Act','',
       'Dear Sir/Madam,','',
-      'I, '+nm+' ('+em+'), formally request the immediate removal of my copyrighted visual works from any AI training datasets maintained or used by your organisation.','',
-      'This request is made pursuant to Article 53(1)(c) of the EU AI Act (Regulation (EU) 2024/1689), which grants creators the explicit right to opt out of having their works used for AI training purposes.','',
-      'My credentials:',
-      '  Style Identity Passport ID: '+pid,
-      '  Specialization: '+sp,
-      '  Registration Date: '+reg,'',
-      'Please confirm receipt of this request within 14 days and provide written confirmation of removal within 30 days as required by law.','',
-      'Failure to comply may be reported to the relevant national supervisory authority.','',
-      'Sincerely,',nm,em
-    ].join('\n'),
-    transparency:[
-      dt,'',
-      'To: AI Research and Compliance Team','',
+      'I, '+nm+' ('+em+'), formally request the removal of my copyrighted visual works from any AI training datasets maintained or used by your organisation.','',
+      'This request is made pursuant to Article 53(1)(c) of the EU AI Act (Regulation (EU) 2024/1689).','',
+      'My credentials:','  Style Identity Passport ID: '+pid,'  Specialization: '+sp,'  Registration Date: '+reg,'',
+      'Please confirm receipt within 14 days and confirm removal within 30 days.','',
+      'Sincerely,',nm,em].join('\n'),
+    transparency:[dt,'','To: AI Research and Compliance Team','',
       'Subject: Transparency Disclosure Request — Article 13, EU AI Act','',
       'Dear Sir/Madam,','',
-      'I, '+nm+' ('+em+'), hereby request full transparency disclosure regarding the use of my creative works in your AI systems.','',
-      'Pursuant to Article 13 of the EU AI Act, AI system providers must disclose to creators when and how their works have been used.','',
-      'Please provide:',
+      'I, '+nm+' ('+em+'), request full transparency disclosure regarding the use of my creative works in your AI systems.','',
+      'Pursuant to Article 13 of the EU AI Act, please provide:',
       '  1. Confirmation of whether my works appear in any training datasets',
       '  2. Details of how my works were sourced and processed',
-      '  3. Names of AI models trained using my work',
-      '  4. The time period during which my work was used','',
-      'My credentials:',
-      '  Style Identity Passport ID: '+pid,
-      '  Specialization: '+sp,'',
+      '  3. Names of AI models trained using my work','',
+      'My credentials:','  Style Identity Passport ID: '+pid,'  Specialization: '+sp,'',
       'Please respond within 30 days as required by EU law.','',
-      'Sincerely,',nm,em
-    ].join('\n'),
-    explanation:[
-      dt,'',
-      'To: AI Research and Compliance Team','',
+      'Sincerely,',nm,em].join('\n'),
+    explanation:[dt,'','To: AI Research and Compliance Team','',
       'Subject: Right to Explanation — Article 86, EU AI Act','',
       'Dear Sir/Madam,','',
-      'I, '+nm+' ('+em+'), request a human-readable explanation of any AI decisions that have affected my creative works.','',
-      'Pursuant to Article 86 of the EU AI Act, I have the right to receive a clear, meaningful explanation of automated decisions made by your AI systems that relate to my creative identity and works.','',
-      'My credentials:',
-      '  Style Identity Passport ID: '+pid,
-      '  Specialization: '+sp,'',
-      'Please provide a complete explanation within 30 days.','',
-      'Sincerely,',nm,em
-    ].join('\n')
+      'I, '+nm+' ('+em+'), request a human-readable explanation of AI decisions affecting my creative works.','',
+      'Pursuant to Article 86 of the EU AI Act, I have the right to receive a clear explanation of automated decisions relating to my creative identity.','',
+      'My credentials:','  Style Identity Passport ID: '+pid,'  Specialization: '+sp,'',
+      'Please respond within 30 days.','',
+      'Sincerely,',nm,em].join('\n')
   };
-  var txt=L[type];
+  var txt=letters[type];
   var overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;z-index:2000;background:rgba(13,8,24,.92);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px';
-  var inner=document.createElement('div');
-  inner.style.cssText='background:#1A0828;border:1px solid rgba(176,87,154,.3);max-width:660px;width:100%;max-height:85vh;overflow-y:auto;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)';
-  inner.innerHTML='<button onclick="this.closest(\'.sip-overlay\').remove()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1">×</button>'
-    +'<p style="font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pm);margin-bottom:12px">'+titles[type]+'</p>'
-    +'<pre id="sipLetterText" style="white-space:pre-wrap;font-family:\'Atkinson Hyperlegible\',Arial,sans-serif;font-size:.78rem;color:rgba(250,248,245,.8);line-height:1.72;background:rgba(255,255,255,.03);padding:22px;border:1px solid rgba(255,255,255,.07);margin-bottom:24px">'+txt+'</pre>'
-    +'<div style="display:flex;gap:12px;flex-wrap:wrap">'
-    +'<button id="sipCopyBtn" style="background:var(--pm);color:#fff;border:none;padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Copy Letter</button>'
-    +'<button id="sipDlBtn" style="background:rgba(255,255,255,.07);color:rgba(250,248,245,.75);border:1px solid rgba(255,255,255,.14);padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Download .txt</button>'
-    +'</div>';
   overlay.className='sip-overlay';
-  overlay.appendChild(inner);
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});
-  document.getElementById('sipCopyBtn').addEventListener('click',function(){
-    navigator.clipboard.writeText(document.getElementById('sipLetterText').textContent)
-      .then(function(){var b=document.getElementById('sipCopyBtn');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy Letter'},2200)});
-  });
-  document.getElementById('sipDlBtn').addEventListener('click',function(){
+  overlay.style.cssText='position:fixed;inset:0;z-index:2000;background:rgba(13,8,24,.92);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px';
+  var box=document.createElement('div');
+  box.style.cssText='background:#1A0828;border:1px solid rgba(176,87,154,.3);max-width:660px;width:100%;max-height:85vh;overflow-y:auto;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)';
+  var pre=document.createElement('pre');
+  pre.id='sipLetterText';
+  pre.style.cssText="white-space:pre-wrap;font-family:'Atkinson Hyperlegible',Arial,sans-serif;font-size:.78rem;color:rgba(250,248,245,.8);line-height:1.72;background:rgba(255,255,255,.03);padding:22px;border:1px solid rgba(255,255,255,.07);margin-bottom:24px";
+  pre.textContent=txt;
+  var closeBtn=document.createElement('button');
+  closeBtn.style.cssText='position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1';
+  closeBtn.textContent='×';
+  closeBtn.onclick=function(){overlay.remove()};
+  var lbl=document.createElement('p');
+  lbl.style.cssText='font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pm);margin-bottom:12px';
+  lbl.textContent=titles[type];
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:12px;flex-wrap:wrap';
+  var copyBtn=document.createElement('button');
+  copyBtn.style.cssText='background:var(--pm);color:#fff;border:none;padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer';
+  copyBtn.textContent='Copy Letter';
+  copyBtn.onclick=function(){
+    navigator.clipboard.writeText(pre.textContent).then(function(){
+      copyBtn.textContent='✓ Copied!';setTimeout(function(){copyBtn.textContent='Copy Letter'},2200);
+    });
+  };
+  var dlBtn=document.createElement('button');
+  dlBtn.style.cssText='background:rgba(255,255,255,.07);color:rgba(250,248,245,.75);border:1px solid rgba(255,255,255,.14);padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer';
+  dlBtn.textContent='Download .txt';
+  dlBtn.onclick=function(){
     var a=document.createElement('a');
-    a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(document.getElementById('sipLetterText').textContent);
+    a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(pre.textContent);
     a.download='SIP-'+type+'-letter.txt';
     document.body.appendChild(a);a.click();a.remove();
-  });
+  };
+  btns.appendChild(copyBtn);btns.appendChild(dlBtn);
+  box.appendChild(closeBtn);box.appendChild(lbl);box.appendChild(pre);box.appendChild(btns);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});
 }
 
 // ─── CONFLICT REPORTER ────────────────────────
@@ -1335,83 +1325,47 @@ function reportConflict(){
   var overlay=document.createElement('div');
   overlay.className='sip-overlay';
   overlay.style.cssText='position:fixed;inset:0;z-index:2000;background:rgba(13,8,24,.92);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px';
-
   var box=document.createElement('div');
   box.style.cssText='background:#1A0828;border:1px solid rgba(224,112,112,.25);max-width:560px;width:100%;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)';
-
+  function mkLabel(txt){var l=document.createElement('label');l.style.cssText='font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.38);display:block;margin-bottom:7px';l.textContent=txt;return l;}
+  function mkInput(id,ph){var i=document.createElement('input');i.id=id;i.type='text';i.placeholder=ph;i.style.cssText='width:100%;border:1.5px solid rgba(255,255,255,.1);padding:11px 14px;font-size:.84rem;font-family:var(--f);background:rgba(255,255,255,.05);color:#FAF8F5;outline:none';return i;}
+  function mkTA(id,ph){var t=document.createElement('textarea');t.id=id;t.rows=4;t.placeholder=ph;t.style.cssText='width:100%;border:1.5px solid rgba(255,255,255,.1);padding:11px 14px;font-size:.84rem;font-family:var(--f);background:rgba(255,255,255,.05);color:#FAF8F5;outline:none;resize:vertical';return t;}
   var closeBtn=document.createElement('button');
   closeBtn.style.cssText='position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1';
-  closeBtn.textContent='×';
-  closeBtn.onclick=function(){overlay.remove()};
-
-  var label=document.createElement('p');
-  label.style.cssText='font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:#E07070;margin-bottom:12px';
-  label.textContent='Report a Conflict';
-
-  var heading=document.createElement('h3');
-  heading.style.cssText='color:#FAF8F5;font-size:1.2rem;font-weight:700;margin-bottom:8px';
-  heading.textContent='Document AI Style Copying';
-
-  var desc=document.createElement('p');
-  desc.style.cssText='color:rgba(250,248,245,.45);font-size:.82rem;line-height:1.65;margin-bottom:26px';
-  desc.textContent='Provide details about the AI-generated image you believe copies your style. This creates a timestamped legal record linked to your Style Passport.';
-
-  function makeField(labelText, inputId, isTextarea){
-    var wrap=document.createElement('div');
-    wrap.style.marginBottom='16px';
-    var lbl=document.createElement('label');
-    lbl.style.cssText='font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.38);display:block;margin-bottom:7px';
-    lbl.textContent=labelText;
-    var inp=isTextarea?document.createElement('textarea'):document.createElement('input');
-    inp.id=inputId;
-    if(!isTextarea){inp.type='text';}
-    if(isTextarea){inp.rows=4;}
-    inp.style.cssText='width:100%;border:1.5px solid rgba(255,255,255,.1);padding:11px 14px;font-size:.84rem;font-family:var(--f);background:rgba(255,255,255,.05);color:#FAF8F5;outline:none;resize:vertical';
-    inp.placeholder=isTextarea?'Describe how the AI-generated image copies your style — color palette, linework, composition, mood…':'e.g. Midjourney, DALL·E, Stable Diffusion…';
-    wrap.appendChild(lbl);
-    wrap.appendChild(inp);
-    return wrap;
-  }
-
+  closeBtn.textContent='×';closeBtn.onclick=function(){overlay.remove()};
+  var lbl=document.createElement('p');lbl.style.cssText='font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:#E07070;margin-bottom:12px';lbl.textContent='Report a Conflict';
+  var h3=document.createElement('h3');h3.style.cssText='color:#FAF8F5;font-size:1.2rem;font-weight:700;margin-bottom:8px';h3.textContent='Document AI Style Copying';
+  var desc=document.createElement('p');desc.style.cssText='color:rgba(250,248,245,.45);font-size:.82rem;line-height:1.65;margin-bottom:26px';desc.textContent='Provide details about the AI-generated image you believe copies your style. This creates a timestamped legal record linked to your Style Passport.';
+  var w1=document.createElement('div');w1.style.marginBottom='16px';w1.appendChild(mkLabel('AI Platform / Tool'));w1.appendChild(mkInput('cf-platform','e.g. Midjourney, DALL·E, Stable Diffusion…'));
+  var w2=document.createElement('div');w2.style.marginBottom='20px';w2.appendChild(mkLabel('Description of similarity'));w2.appendChild(mkTA('cf-desc','Describe how the AI-generated image copies your style…'));
   var submitBtn=document.createElement('button');
-  submitBtn.id='cf-submit';
-  submitBtn.style.cssText='background:#9A2040;color:#fff;border:none;padding:12px 24px;font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;width:100%;margin-top:4px';
+  submitBtn.style.cssText='background:#9A2040;color:#fff;border:none;padding:12px 24px;font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;width:100%';
   submitBtn.textContent='Submit Conflict Record';
-  submitBtn.onclick=function(){submitConflict(submitBtn)};
-
-  box.appendChild(closeBtn);
-  box.appendChild(label);
-  box.appendChild(heading);
-  box.appendChild(desc);
-  box.appendChild(makeField('AI Platform / Tool','cf-platform',false));
-  box.appendChild(makeField('Description of similarity','cf-desc',true));
-  box.appendChild(submitBtn);
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
+  submitBtn.onclick=function(){submitConflict(submitBtn,overlay)};
+  box.appendChild(closeBtn);box.appendChild(lbl);box.appendChild(h3);box.appendChild(desc);
+  box.appendChild(w1);box.appendChild(w2);box.appendChild(submitBtn);
+  overlay.appendChild(box);document.body.appendChild(overlay);
   overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});
 }
 
-async function submitConflict(btn){
+async function submitConflict(btn,overlay){
   var pl=document.getElementById('cf-platform').value.trim();
   var ds=document.getElementById('cf-desc').value.trim();
   if(!pl||!ds){alert('Please fill in all fields.');return}
   btn.textContent='Submitting…';btn.disabled=true;
   try{
     var body={fields:{Title:'Style conflict — '+pl,Platform:pl,Description:ds,
-      Illustrator:user?user.name:'',Email:user?user.email:'',
-      PassportID:user?user.passportId:'',
+      Illustrator:user?user.name:'',Email:user?user.email:'',PassportID:user?user.passportId:'',
       Date:new Date().toISOString().split('T')[0],Status:'Submitted'}};
     await fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent('Conflict Records'),
       {method:'POST',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
-    document.querySelector('.sip-overlay').remove();
-    var hero=document.getElementById('passportHero');
-    if(hero)hero.remove();
+    overlay.remove();
+    var hero=document.getElementById('passportHero');if(hero)hero.remove();
     loadDashboard();showTab('conflicts');
-  }catch(e){
-    btn.textContent='Submit Conflict Record';btn.disabled=false;
-    alert('Error submitting. Please try again.');
-  }
+  }catch(e){btn.textContent='Submit Conflict Record';btn.disabled=false;alert('Error. Please try again.');}
 }
+
+// ─── CHATBOT (handled by Chatbase embed) ──────
 
 </script>
 </body>
