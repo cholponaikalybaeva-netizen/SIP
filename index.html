@@ -1279,7 +1279,11 @@ function showIssuingOverlay(){
   t1.style.cssText='color:#FAF8F5;font-size:1.05rem;font-weight:700;letter-spacing:-.01em';
   var t2=document.createElement('div');t2.textContent='Your registration is being processed through the registry pipeline.';
   t2.style.cssText='color:rgba(250,248,245,.45);font-size:.82rem';
-  ov.appendChild(sp);ov.appendChild(t1);ov.appendChild(t2);document.body.appendChild(ov);
+  var skip=document.createElement('button');
+  skip.textContent='Continue browsing \u2014 I\u2019ll sign in later';
+  skip.style.cssText='margin-top:10px;background:none;border:1px solid rgba(255,255,255,.2);color:rgba(250,248,245,.55);padding:9px 22px;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;cursor:none';
+  skip.onclick=function(){var o=document.getElementById('issuingOverlay');if(o)o.remove()};
+  ov.appendChild(sp);ov.appendChild(t1);ov.appendChild(t2);ov.appendChild(skip);document.body.appendChild(ov);
 }
 function showSetPassword(rec){
   var ov=document.getElementById('issuingOverlay');if(!ov)return;
@@ -1307,9 +1311,9 @@ async function pollForNewRecord(){
   var tries=0;
   var timer=setInterval(async function(){
     tries++;
-    if(tries>24){clearInterval(timer);
+    if(tries>18){clearInterval(timer);
       var t=document.getElementById('issuingText');
-      if(t)t.textContent='Registration received \u2014 sign in with your email once your confirmation arrives.';
+      if(t)t.textContent='Registration received! Processing is taking a moment \u2014 you can sign in with your email in a minute or two.';
       setTimeout(function(){var o=document.getElementById('issuingOverlay');if(o)o.remove();openModal('login')},4000);
       return}
     try{
