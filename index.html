@@ -1243,113 +1243,169 @@ async function loadDashboard(){
 
 // ─── LETTER GENERATOR ─────────────────────────
 function generateLetter(type){
-  const pid=user?.passportId||'SIP-2026-XXX';
-  const nm=user?.name||'Illustrator';
-  const em=user?.email||'—';
-  const sp=user?.spec||'Illustrator';
-  const dt=new Date().toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'});
-  const titles={optout:'Formal Opt-Out — Article 53, EU AI Act',transparency:'Transparency Disclosure — Article 13, EU AI Act',explanation:'Right to Explanation — Article 86, EU AI Act'};
-  const letters={
-    optout:dt+'
-
-To: AI Research and Compliance Team
-
-Subject: Formal Opt-Out from AI Training Dataset — Article 53, EU AI Act
-
-Dear Sir/Madam,
-
-I, '+nm+' ('+em+'), formally request the immediate removal of my copyrighted visual works from any AI training datasets maintained or used by your organisation.
-
-This request is made pursuant to Article 53(1)(c) of the EU AI Act (Regulation (EU) 2024/1689), which grants creators the explicit right to opt out of having their works used for AI training purposes.
-
-My credentials:
-  Style Identity Passport ID: '+pid+'
-  Specialization: '+sp+'
-  Registration Date: '+(user?.registered||dt)+'
-
-Please confirm receipt of this request within 14 days and provide written confirmation of removal within 30 days as required by law.
-
-Failure to comply may be reported to the relevant national supervisory authority.
-
-Sincerely,
-'+nm+'
-'+em,
-    transparency:dt+'
-
-To: AI Research and Compliance Team
-
-Subject: Transparency Disclosure Request — Article 13, EU AI Act
-
-Dear Sir/Madam,
-
-I, '+nm+' ('+em+'), hereby request full transparency disclosure regarding the use of my creative works in your AI systems.
-
-Pursuant to Article 13 of the EU AI Act, AI system providers must disclose to creators when and how their works have been used.
-
-Please provide:
-  1. Confirmation of whether my works appear in any training datasets
-  2. Details of how my works were sourced and processed
-  3. Names of AI models trained using my work
-  4. The time period during which my work was used
-
-My credentials:
-  Style Identity Passport ID: '+pid+'
-  Specialization: '+sp+'
-
-Please respond within 30 days as required by EU law.
-
-Sincerely,
-'+nm+'
-'+em,
-    explanation:dt+'
-
-To: AI Research and Compliance Team
-
-Subject: Right to Explanation — Article 86, EU AI Act
-
-Dear Sir/Madam,
-
-I, '+nm+' ('+em+'), request a human-readable explanation of any AI decisions that have affected my creative works.
-
-Pursuant to Article 86 of the EU AI Act, I have the right to receive a clear, meaningful explanation of automated decisions made by your AI systems that relate to my creative identity and works.
-
-My credentials:
-  Style Identity Passport ID: '+pid+'
-  Specialization: '+sp+'
-
-Please provide a complete explanation within 30 days.
-
-Sincerely,
-'+nm+'
-'+em
+  var pid=user&&user.passportId?user.passportId:'SIP-2026-XXX';
+  var nm=user&&user.name?user.name:'Illustrator';
+  var em=user&&user.email?user.email:'—';
+  var sp=user&&user.spec?user.spec:'Illustrator';
+  var reg=user&&user.registered?user.registered:new Date().toLocaleDateString('en-GB');
+  var dt=new Date().toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'});
+  var titles={
+    optout:'Formal Opt-Out — Article 53, EU AI Act',
+    transparency:'Transparency Disclosure — Article 13, EU AI Act',
+    explanation:'Right to Explanation — Article 86, EU AI Act'
   };
-  const txt=letters[type];
-  const overlay=document.createElement('div');
+  var L={
+    optout:[
+      dt,'',
+      'To: AI Research and Compliance Team','',
+      'Subject: Formal Opt-Out from AI Training Dataset — Article 53, EU AI Act','',
+      'Dear Sir/Madam,','',
+      'I, '+nm+' ('+em+'), formally request the immediate removal of my copyrighted visual works from any AI training datasets maintained or used by your organisation.','',
+      'This request is made pursuant to Article 53(1)(c) of the EU AI Act (Regulation (EU) 2024/1689), which grants creators the explicit right to opt out of having their works used for AI training purposes.','',
+      'My credentials:',
+      '  Style Identity Passport ID: '+pid,
+      '  Specialization: '+sp,
+      '  Registration Date: '+reg,'',
+      'Please confirm receipt of this request within 14 days and provide written confirmation of removal within 30 days as required by law.','',
+      'Failure to comply may be reported to the relevant national supervisory authority.','',
+      'Sincerely,',nm,em
+    ].join('\n'),
+    transparency:[
+      dt,'',
+      'To: AI Research and Compliance Team','',
+      'Subject: Transparency Disclosure Request — Article 13, EU AI Act','',
+      'Dear Sir/Madam,','',
+      'I, '+nm+' ('+em+'), hereby request full transparency disclosure regarding the use of my creative works in your AI systems.','',
+      'Pursuant to Article 13 of the EU AI Act, AI system providers must disclose to creators when and how their works have been used.','',
+      'Please provide:',
+      '  1. Confirmation of whether my works appear in any training datasets',
+      '  2. Details of how my works were sourced and processed',
+      '  3. Names of AI models trained using my work',
+      '  4. The time period during which my work was used','',
+      'My credentials:',
+      '  Style Identity Passport ID: '+pid,
+      '  Specialization: '+sp,'',
+      'Please respond within 30 days as required by EU law.','',
+      'Sincerely,',nm,em
+    ].join('\n'),
+    explanation:[
+      dt,'',
+      'To: AI Research and Compliance Team','',
+      'Subject: Right to Explanation — Article 86, EU AI Act','',
+      'Dear Sir/Madam,','',
+      'I, '+nm+' ('+em+'), request a human-readable explanation of any AI decisions that have affected my creative works.','',
+      'Pursuant to Article 86 of the EU AI Act, I have the right to receive a clear, meaningful explanation of automated decisions made by your AI systems that relate to my creative identity and works.','',
+      'My credentials:',
+      '  Style Identity Passport ID: '+pid,
+      '  Specialization: '+sp,'',
+      'Please provide a complete explanation within 30 days.','',
+      'Sincerely,',nm,em
+    ].join('\n')
+  };
+  var txt=L[type];
+  var overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;z-index:2000;background:rgba(13,8,24,.92);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px';
-  overlay.innerHTML='<div style="background:#1A0828;border:1px solid rgba(176,87,154,.3);max-width:660px;width:100%;max-height:85vh;overflow-y:auto;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)"><button onclick="this.closest('[style*=fixed]').remove()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1">×</button><p style="font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pm);margin-bottom:12px">'+titles[type]+'</p><pre id="sipLetterText" style="white-space:pre-wrap;font-family:'Atkinson Hyperlegible',Arial,sans-serif;font-size:.78rem;color:rgba(250,248,245,.8);line-height:1.72;background:rgba(255,255,255,.03);padding:22px;border:1px solid rgba(255,255,255,.07);margin-bottom:24px">'+txt+'</pre><div style="display:flex;gap:12px;flex-wrap:wrap"><button id="sipCopyBtn" onclick="navigator.clipboard.writeText(document.getElementById('sipLetterText').textContent).then(()=>{document.getElementById('sipCopyBtn').textContent='✓ Copied!';setTimeout(()=>document.getElementById('sipCopyBtn').textContent='Copy Letter',2200)})" style="background:var(--pm);color:#fff;border:none;padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Copy Letter</button><button onclick="(()=>{const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(document.getElementById('sipLetterText').textContent);a.download='SIP-letter.txt';document.body.appendChild(a);a.click();a.remove()})()" style="background:rgba(255,255,255,.07);color:rgba(250,248,245,.75);border:1px solid rgba(255,255,255,.14);padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Download .txt</button></div></div>';
+  var inner=document.createElement('div');
+  inner.style.cssText='background:#1A0828;border:1px solid rgba(176,87,154,.3);max-width:660px;width:100%;max-height:85vh;overflow-y:auto;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)';
+  inner.innerHTML='<button onclick="this.closest(\'.sip-overlay\').remove()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1">×</button>'
+    +'<p style="font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pm);margin-bottom:12px">'+titles[type]+'</p>'
+    +'<pre id="sipLetterText" style="white-space:pre-wrap;font-family:\'Atkinson Hyperlegible\',Arial,sans-serif;font-size:.78rem;color:rgba(250,248,245,.8);line-height:1.72;background:rgba(255,255,255,.03);padding:22px;border:1px solid rgba(255,255,255,.07);margin-bottom:24px">'+txt+'</pre>'
+    +'<div style="display:flex;gap:12px;flex-wrap:wrap">'
+    +'<button id="sipCopyBtn" style="background:var(--pm);color:#fff;border:none;padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Copy Letter</button>'
+    +'<button id="sipDlBtn" style="background:rgba(255,255,255,.07);color:rgba(250,248,245,.75);border:1px solid rgba(255,255,255,.14);padding:11px 26px;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Download .txt</button>'
+    +'</div>';
+  overlay.className='sip-overlay';
+  overlay.appendChild(inner);
   document.body.appendChild(overlay);
-  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove()});
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});
+  document.getElementById('sipCopyBtn').addEventListener('click',function(){
+    navigator.clipboard.writeText(document.getElementById('sipLetterText').textContent)
+      .then(function(){var b=document.getElementById('sipCopyBtn');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy Letter'},2200)});
+  });
+  document.getElementById('sipDlBtn').addEventListener('click',function(){
+    var a=document.createElement('a');
+    a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(document.getElementById('sipLetterText').textContent);
+    a.download='SIP-'+type+'-letter.txt';
+    document.body.appendChild(a);a.click();a.remove();
+  });
 }
 
 // ─── CONFLICT REPORTER ────────────────────────
 function reportConflict(){
-  const overlay=document.createElement('div');
+  var overlay=document.createElement('div');
+  overlay.className='sip-overlay';
   overlay.style.cssText='position:fixed;inset:0;z-index:2000;background:rgba(13,8,24,.92);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px';
-  overlay.innerHTML='<div style="background:#1A0828;border:1px solid rgba(224,112,112,.25);max-width:560px;width:100%;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)"><button onclick="this.closest('[style*=fixed]').remove()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1">×</button><p style="font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:#E07070;margin-bottom:12px">Report a Conflict</p><h3 style="color:#FAF8F5;font-size:1.2rem;font-weight:700;margin-bottom:8px">Document AI Style Copying</h3><p style="color:rgba(250,248,245,.45);font-size:.82rem;line-height:1.65;margin-bottom:26px">Provide details about the AI-generated image you believe copies your style. This creates a timestamped legal record linked to your Style Passport.</p><div style="margin-bottom:16px"><label style="font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.38);display:block;margin-bottom:7px">AI Platform / Tool</label><input id="cf-platform" type="text" placeholder="e.g. Midjourney, DALL·E, Stable Diffusion…" style="width:100%;border:1.5px solid rgba(255,255,255,.1);padding:11px 14px;font-size:.84rem;font-family:var(--f);background:rgba(255,255,255,.05);color:#FAF8F5;outline:none"></div><div style="margin-bottom:20px"><label style="font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.38);display:block;margin-bottom:7px">Description of similarity</label><textarea id="cf-desc" rows="4" placeholder="Describe how the AI-generated image copies your style — color palette, linework, composition, mood…" style="width:100%;border:1.5px solid rgba(255,255,255,.1);padding:11px 14px;font-size:.84rem;font-family:var(--f);background:rgba(255,255,255,.05);color:#FAF8F5;outline:none;resize:vertical"></textarea></div><button id="cf-submit" onclick="submitConflict(this)" style="background:#9A2040;color:#fff;border:none;padding:12px 24px;font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;width:100%">Submit Conflict Record</button></div>';
+
+  var box=document.createElement('div');
+  box.style.cssText='background:#1A0828;border:1px solid rgba(224,112,112,.25);max-width:560px;width:100%;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.65)';
+
+  var closeBtn=document.createElement('button');
+  closeBtn.style.cssText='position:absolute;top:14px;right:18px;background:none;border:none;color:rgba(250,248,245,.4);font-size:1.5rem;cursor:pointer;line-height:1';
+  closeBtn.textContent='×';
+  closeBtn.onclick=function(){overlay.remove()};
+
+  var label=document.createElement('p');
+  label.style.cssText='font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:#E07070;margin-bottom:12px';
+  label.textContent='Report a Conflict';
+
+  var heading=document.createElement('h3');
+  heading.style.cssText='color:#FAF8F5;font-size:1.2rem;font-weight:700;margin-bottom:8px';
+  heading.textContent='Document AI Style Copying';
+
+  var desc=document.createElement('p');
+  desc.style.cssText='color:rgba(250,248,245,.45);font-size:.82rem;line-height:1.65;margin-bottom:26px';
+  desc.textContent='Provide details about the AI-generated image you believe copies your style. This creates a timestamped legal record linked to your Style Passport.';
+
+  function makeField(labelText, inputId, isTextarea){
+    var wrap=document.createElement('div');
+    wrap.style.marginBottom='16px';
+    var lbl=document.createElement('label');
+    lbl.style.cssText='font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(250,248,245,.38);display:block;margin-bottom:7px';
+    lbl.textContent=labelText;
+    var inp=isTextarea?document.createElement('textarea'):document.createElement('input');
+    inp.id=inputId;
+    if(!isTextarea){inp.type='text';}
+    if(isTextarea){inp.rows=4;}
+    inp.style.cssText='width:100%;border:1.5px solid rgba(255,255,255,.1);padding:11px 14px;font-size:.84rem;font-family:var(--f);background:rgba(255,255,255,.05);color:#FAF8F5;outline:none;resize:vertical';
+    inp.placeholder=isTextarea?'Describe how the AI-generated image copies your style — color palette, linework, composition, mood…':'e.g. Midjourney, DALL·E, Stable Diffusion…';
+    wrap.appendChild(lbl);
+    wrap.appendChild(inp);
+    return wrap;
+  }
+
+  var submitBtn=document.createElement('button');
+  submitBtn.id='cf-submit';
+  submitBtn.style.cssText='background:#9A2040;color:#fff;border:none;padding:12px 24px;font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;width:100%;margin-top:4px';
+  submitBtn.textContent='Submit Conflict Record';
+  submitBtn.onclick=function(){submitConflict(submitBtn)};
+
+  box.appendChild(closeBtn);
+  box.appendChild(label);
+  box.appendChild(heading);
+  box.appendChild(desc);
+  box.appendChild(makeField('AI Platform / Tool','cf-platform',false));
+  box.appendChild(makeField('Description of similarity','cf-desc',true));
+  box.appendChild(submitBtn);
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
-  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove()});
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});
 }
 
 async function submitConflict(btn){
-  const pl=document.getElementById('cf-platform').value.trim();
-  const ds=document.getElementById('cf-desc').value.trim();
+  var pl=document.getElementById('cf-platform').value.trim();
+  var ds=document.getElementById('cf-desc').value.trim();
   if(!pl||!ds){alert('Please fill in all fields.');return}
   btn.textContent='Submitting…';btn.disabled=true;
   try{
-    const body={fields:{Title:'Style conflict — '+pl,Platform:pl,Description:ds,Illustrator:user?.name||'',Email:user?.email||'',PassportID:user?.passportId||'',Date:new Date().toISOString().split('T')[0],Status:'Submitted'}};
-    await fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent('Conflict Records'),{method:'POST',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
-    btn.closest('[style*=fixed]').remove();
-    document.getElementById('passportHero')&&document.getElementById('passportHero').remove();
+    var body={fields:{Title:'Style conflict — '+pl,Platform:pl,Description:ds,
+      Illustrator:user?user.name:'',Email:user?user.email:'',
+      PassportID:user?user.passportId:'',
+      Date:new Date().toISOString().split('T')[0],Status:'Submitted'}};
+    await fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent('Conflict Records'),
+      {method:'POST',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    document.querySelector('.sip-overlay').remove();
+    var hero=document.getElementById('passportHero');
+    if(hero)hero.remove();
     loadDashboard();showTab('conflicts');
   }catch(e){
     btn.textContent='Submit Conflict Record';btn.disabled=false;
@@ -1357,7 +1413,6 @@ async function submitConflict(btn){
   }
 }
 
-// Chatbot: Chatbase embed (see script tag above)
 </script>
 </body>
 </html>
