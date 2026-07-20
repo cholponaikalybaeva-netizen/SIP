@@ -338,34 +338,7 @@ nav{
   padding:38px;box-shadow:0 4px 24px rgba(120,50,170,.05);
 }
 
-/* ─── CHATBOT ─────────────────────────────────────── */
-#chatBot{position:fixed;bottom:30px;right:30px;z-index:800}
-.cb-bubble{
-  width:50px;height:50px;border-radius:50%;
-  background:var(--pm);border:none;color:#fff;
-  font-size:1.3rem;box-shadow:0 4px 20px rgba(176,87,154,.38);
-  transition:transform .2s;display:flex;align-items:center;justify-content:center;
-}
-.cb-bubble:hover{transform:scale(1.08)}
-.cb-win{
-  display:none;width:310px;
-  background:rgba(250,248,245,.97);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,255,255,.92);
-  box-shadow:0 16px 60px rgba(26,8,40,.16);
-  margin-bottom:10px;overflow:hidden;
-}
-.cb-win.open{display:block}
-.cb-head{background:var(--pm);color:#fff;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
-.cb-head h3{font-size:.83rem;font-weight:700}
-.cb-close{background:none;border:none;color:#fff;font-size:1.2rem;line-height:1}
-.cb-msgs{height:230px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px}
-.msg-bot{max-width:88%;font-size:.8rem;line-height:1.52;padding:7px 11px;background:rgba(176,87,154,.1);border-radius:0 11px 11px 11px;color:var(--ink)}
-.msg-usr{max-width:88%;font-size:.8rem;line-height:1.52;padding:7px 11px;background:var(--pm);color:#fff;border-radius:11px 11px 0 11px;margin-left:auto}
-.cb-input{display:flex;border-top:1px solid var(--rule)}
-.cb-input input{flex:1;border:none;padding:11px 13px;background:transparent;font-size:.8rem;font-family:var(--f);color:var(--ink)}
-.cb-input input:focus{outline:none}
-.cb-input button{background:var(--pm);color:#fff;border:none;padding:0 15px;font-size:.9rem}
+/* chatbot handled by Chatbase embed */
 
 /* ─── INNER PAGES ─────────────────────────────────── */
 .page{display:none;min-height:100svh;padding:110px 48px 80px;background:var(--bg)}
@@ -884,23 +857,14 @@ footer p{font-size:.78rem;letter-spacing:.04em}
   </div>
 </div>
 
-<!-- ─── CHATBOT ───────────────────────────────── -->
-<div id="chatBot" role="complementary" aria-label="SIP Assistant">
-  <div class="cb-win" id="cbWin" aria-live="polite">
-    <div class="cb-head">
-      <h3>✦ SIP Assistant</h3>
-      <button class="cb-close" onclick="toggleChat()" aria-label="Close chat">×</button>
-    </div>
-    <div class="cb-msgs" id="cbMsgs">
-      <div class="msg-bot">Hi! I'm your SIP guide. Ask me anything about illustrator rights, the EU AI Act, or the platform.</div>
-    </div>
-    <div class="cb-input">
-      <input id="cbIn" type="text" placeholder="Ask a question…" aria-label="Chat message" onkeydown="if(event.key==='Enter')cbSend()">
-      <button onclick="cbSend()" aria-label="Send">→</button>
-    </div>
-  </div>
-  <button class="cb-bubble" onclick="toggleChat()" aria-label="Open SIP Assistant">✦</button>
-</div>
+<!-- ─── CHATBASE AI CHATBOT ──────────────────── -->
+<script>
+window.embeddedChatbotConfig = {
+  chatbotId: "aqFjYzP16-I9ZmsiqyWcv",
+  domain: "www.chatbase.co"
+}
+</script>
+<script src="https://www.chatbase.co/embed.min.js" chatbotId="aqFjYzP16-I9ZmsiqyWcv" domain="www.chatbase.co" defer></script>
 
 <script>
 // ─── AIRTABLE ──────────────────────────────────
@@ -1393,39 +1357,7 @@ async function submitConflict(btn){
   }
 }
 
-// ─── CHATBOT ──────────────────────────────────
-const cbQA=[
-  [/^(hello+|hi+|hey+|sup|yo+)[\s!?.]*$/i,"Hi! I'm the SIP Assistant. Ask me about illustrator rights, the EU AI Act, how to register, or how the platform works."],
-  [/what.*sip|what is this|what.*platform|what.*do/i,"SIP — Style Identity Platform — helps illustrators document their visual style and protect it under the EU AI Act. You can register your style, get a Style Passport, and access your legal rights against AI misuse."],
-  [/passport|style passport|what.*passport/i,"Your Style Passport is a verified digital record of your unique artistic identity — your color palettes, linework, composition patterns. It's timestamped proof that your style exists and is yours, usable as legal evidence."],
-  [/how.*register|how.*join|how.*sign|how.*start/i,"Scroll down to the registration form on this page and fill it in. After submitting, come back and click 'Log In' with your email to access your passport and dashboard."],
-  [/login|log in|access.*dashboard|dashboard/i,"Click 'Log In' in the top navigation. Enter the email you registered with — your dashboard will open with your Style Passport."],
-  [/opt.?out|article 53|training data|remove.*work/i,"Under Article 53 of the EU AI Act, you can formally request AI companies remove your work from their training datasets. SIP generates a legally-compliant opt-out letter for you referencing your Passport ID."],
-  [/article 13|transparency|disclosure/i,"Article 13 requires AI systems to disclose when and how creative works were used. You can request this disclosure from any AI provider — SIP helps you draft the request."],
-  [/article 86|explanation|decision/i,"Article 86 gives you the right to a human-readable explanation of AI decisions that affect your work. You can formally request this from AI developers."],
-  [/eu.{0,4}ai.{0,4}act|\bai act\b|\bthe act\b|what.*act|law|legal|regulation/i,"The EU AI Act (2024) is the world's first comprehensive AI law. For illustrators it means: opt-out rights from training data (Art. 53), transparency about AI usage (Art. 13), and the right to explanation (Art. 86)."],
-  [/detect|ai.?generat|similar|copy|stolen|mimick/i,"If you suspect an AI has copied your style, upload the AI-generated image to the Conflict Detection section in your dashboard. It compares it against your registered style fingerprint."],
-  [/cost|free|price|paid/i,"SIP is completely free for illustrators. Registration takes under 2 minutes."],
-  [/style|color|linework|fingerprint|identity/i,"Your style is your identity — the accumulated result of years of creative decisions. SIP documents it formally: color palette tendencies, linework characteristics, compositional habits. This documentation is what gives you legal standing."],
-  [/illustrator|artist|creator|designer/i,"SIP is built specifically for illustrators. Your visual style is not just preference — it's creative property, and the EU AI Act now gives you tools to protect it."],
-  [/how.*work|explain|tell me more/i,"Here's how SIP works: (1) Register your style using the form below. (2) Receive your Style Passport — a verified record of your visual identity. (3) Log in to access your dashboard, rights centre, and conflict detection tools."],
-  [/berlin|macromedia|thesis|cholponai|kalybaeva/i,"SIP was created as a bachelor thesis by Cholponai Kalybaeva at Macromedia University of Applied Sciences, Berlin, 2026. It's a research prototype exploring how AI tools can protect, rather than exploit, illustrators' creative identity."],
-  [/thank|thanks|great|cool|nice|awesome/i,"You're welcome! Is there anything else you'd like to know about your rights or how SIP works?"],
-  [/help|what.*ask|what.*question/i,"You can ask me about: the EU AI Act, your rights as an illustrator, how the Style Passport works, how to register, how to detect AI style copying, or anything about the platform."],
-];
-const cbDefault="I'm not sure about that one — but I can help with: registering your style, the EU AI Act, your legal rights as an illustrator, or how the Style Passport works. What would you like to know?";
-
-function toggleChat(){document.getElementById('cbWin').classList.toggle('open')}
-function cbSend(){
-  const inp=document.getElementById('cbIn');
-  const msgs=document.getElementById('cbMsgs');
-  const text=inp.value.trim();if(!text)return;
-  msgs.innerHTML+=`<div class="msg-usr">${text}</div>`;
-  inp.value='';
-  const match=cbQA.find(([re])=>re.test(text));
-  setTimeout(()=>{msgs.innerHTML+=`<div class="msg-bot">${match?match[1]:cbDefault}</div>`;msgs.scrollTop=msgs.scrollHeight},380);
-  msgs.scrollTop=msgs.scrollHeight;
-}
+// Chatbot: Chatbase embed (see script tag above)
 </script>
 </body>
 </html>
