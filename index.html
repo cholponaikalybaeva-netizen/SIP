@@ -407,7 +407,9 @@ nav{
   border:1px solid rgba(255,255,255,.92);
   width:min(420px,90vw);padding:44px 38px;
   box-shadow:0 32px 80px rgba(26,8,40,.18);position:relative;
+  max-height:90vh;overflow-y:auto;
 }
+.modal-box.wide{width:min(660px,95vw);padding:32px 28px}
 .modal-box h2{font-size:1.45rem;font-weight:700;margin-bottom:7px;letter-spacing:-.02em;color:#FAF8F5}
 .modal-box .sub{font-size:.85rem;color:rgba(250,248,245,.55);margin-bottom:28px}
 .close-modal{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.4rem;color:rgba(250,248,245,.4)}
@@ -1088,11 +1090,14 @@ function showTab(tab){
   document.querySelectorAll('.dt').forEach((b,i)=>{
     b.classList.toggle('active',['overview','portfolio','conflicts','rights'][i]===tab);
   });
+  if(tab==='portfolio')loadPortfolio();
 }
 
 // ─── AUTH ──────────────────────────────────────
 function openModal(mode){
   document.getElementById('modalContent').innerHTML=mode==='login'?loginHTML():registerHTML();
+  var box=document.querySelector('.modal-box');
+  if(box)box.classList.toggle('wide',mode==='register');
   document.getElementById('authModal').classList.add('open');
 }
 function closeModal(){document.getElementById('authModal').classList.remove('open')}
@@ -1107,24 +1112,22 @@ function loginHTML(){return`
   <button class="form-sub" onclick="doLogin()">Sign In</button>
   <div class="form-switch">No account? <button onclick="openModal('register')">Register free</button></div>
 `}
-function registerHTML(){return`
-  <h2 id="modalTitle">Claim Your Passport</h2>
-  <p class="sub">Create your Style Identity account</p>
-  <div class="form-grp"><label for="ri-n">Full Name</label><input id="ri-n" type="text" placeholder="Your name"></div>
-  <div class="form-grp"><label for="ri-e">Email</label><input id="ri-e" type="email" placeholder="you@studio.com"></div>
-  <div class="form-grp"><label for="ri-s">Specialization</label>
-    <select id="ri-s">
-      <option value="">Select your style…</option>
-      <option>Editorial Illustration</option><option>Character Design</option>
-      <option>Botanical Art</option><option>Concept Art</option>
-      <option>Surface Pattern</option><option>Children's Book</option>
-      <option>Graphic Novel</option><option>Other</option>
-    </select>
-  </div>
-  <p class="auth-err" id="ri-err">Please fill all fields.</p>
-  <button class="form-sub" onclick="doRegister()">Create Passport</button>
-  <div class="form-switch">Already registered? <button onclick="openModal('login')">Sign in</button></div>
-`}
+function registerHTML(){
+  var d=document.createElement('div');
+  var h2=document.createElement('h2');h2.id='modalTitle';h2.textContent='Claim Your Passport';
+  var sub=document.createElement('p');sub.className='sub';sub.style.marginBottom='20px';sub.textContent='Fill in the form below to activate your Style Identity Passport';
+  var fr=document.createElement('iframe');
+  fr.src='https://tally.so/embed/MePZDl?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1';
+  fr.setAttribute('loading','lazy');fr.width='100%';fr.height='500';
+  fr.frameBorder='0';fr.title='Register for Style Identity Passport';
+  fr.style.cssText='border:none;min-height:460px;display:block;margin-top:8px';
+  var sw=document.createElement('div');sw.className='form-switch';sw.style.marginTop='12px';
+  var swTxt=document.createTextNode('Already registered? ');
+  var swBtn=document.createElement('button');swBtn.textContent='Sign in';swBtn.onclick=function(){openModal('login')};
+  sw.appendChild(swTxt);sw.appendChild(swBtn);
+  d.appendChild(h2);d.appendChild(sub);d.appendChild(fr);d.appendChild(sw);
+  return d.outerHTML;
+}
 
 function doLogin(){
   const e=document.getElementById('li-e').value.trim();
@@ -1141,6 +1144,78 @@ function doRegister(){
   user={name:n,email:e,spec:s};
   closeModal();updateNav();showPage('dashboard');
 }
+// ─── PORTFOLIO ───────────────────────────────
+var portfolioItems=[];
+function loadPortfolio(){
+  var grid=document.getElementById('portfolioGrid');
+  if(!grid)return;
+  var addForm=''
+    +'<div id="portAddWrap" style="margin-bottom:32px;padding:24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:4px">'
+    +'<h3 style="font-size:.95rem;font-weight:700;color:#FAF8F5;margin-bottom:16px;letter-spacing:-.01em">Add Portfolio Piece</h3>'
+    +'<div class="form-grp"><label>Title</label><input id="port-title" type="text" placeholder="e.g. Editorial Spread 2024" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#FAF8F5;font-size:.88rem;border-radius:2px"></div>'
+    +'<div class="form-grp"><label>Image URL</label><input id="port-url" type="url" placeholder="https://..." style="width:100%;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#FAF8F5;font-size:.88rem;border-radius:2px"></div>'
+    +'<div class="form-grp"><label>Medium</label><select id="port-med" style="width:100%;padding:10px 12px;background:rgba(26,8,40,.9);border:1px solid rgba(255,255,255,.12);color:#FAF8F5;font-size:.88rem;border-radius:2px">'
+    +'<option value="">Select medium…</option>'
+    +'<option>Digital Illustration</option><option>Watercolour</option><option>Ink Drawing</option>'
+    +'<option>Mixed Media</option><option>Photography</option><option>3D Render</option><option>Other</option>'
+    +'</select></div>'
+    +'<button class="form-sub" style="margin-top:4px" onclick="addPortfolioItem()">Add to Portfolio</button>'
+    +'</div>';
+  var items=portfolioItems.length
+    ?portfolioItems.map(function(it,i){
+        return '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:0;overflow:hidden;position:relative">'
+          +(it.url?'<img src="'+it.url+'" alt="'+it.title+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">':'<div style="width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,rgba(176,87,154,.18),rgba(94,200,192,.12));display:flex;align-items:center;justify-content:center;font-size:2rem">🖼</div>')
+          +'<div style="padding:14px 16px">'
+          +'<p style="font-size:.86rem;font-weight:700;color:#FAF8F5;margin-bottom:4px">'+it.title+'</p>'
+          +'<p style="font-size:.72rem;color:rgba(250,248,245,.45)">'+it.medium+'</p>'
+          +'</div>'
+          +'<button onclick="removePortfolioItem('+i+')" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;color:rgba(250,248,245,.6);width:24px;height:24px;border-radius:50%;font-size:.8rem;cursor:none;display:flex;align-items:center;justify-content:center">×</button>'
+          +'</div>';
+      }).join('')
+    :'<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:rgba(250,248,245,.35);font-size:.88rem">No portfolio pieces yet. Add your first work above.</div>';
+  grid.innerHTML=addForm+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:8px">'+items+'</div>';
+}
+function addPortfolioItem(){
+  var t=document.getElementById('port-title');
+  var u=document.getElementById('port-url');
+  var m=document.getElementById('port-med');
+  if(!t||!t.value.trim()){if(t)t.style.borderColor='rgba(232,120,120,.6)';return}
+  portfolioItems.push({title:t.value.trim(),url:u?u.value.trim():'',medium:m?m.value:'Other'});
+  // Optional: save to Airtable Portfolio table
+  if(user){
+    var body={fields:{Title:t.value.trim(),ImageURL:u?u.value.trim():'',Medium:m?m.value:'Other',
+      Illustrator:user.name,Email:user.email,PassportID:user.passportId||'',
+      Date:new Date().toISOString().split('T')[0]}};
+    fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent('Portfolio'),
+      {method:'POST',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .catch(function(){});// silently fail if table doesn't exist
+  }
+  loadPortfolio();
+}
+function removePortfolioItem(i){portfolioItems.splice(i,1);loadPortfolio()}
+
+// ─── TALLY postMessage listener — auto-login after registration ──
+window.addEventListener('message',function(e){
+  if(e.data&&e.data.event==='tally-form-complete'){
+    var fd=e.data.payload&&e.data.payload.fields?e.data.payload.fields:[];
+    var nameVal='',emailVal='',specVal='';
+    fd.forEach(function(f){
+      var l=(f.label||'').toLowerCase();
+      if(l.includes('name')&&!l.includes('email'))nameVal=f.value||'';
+      if(l.includes('email'))emailVal=f.value||'';
+      if(l.includes('spec')||l.includes('style')||l.includes('type'))specVal=f.value||'';
+    });
+    user={
+      name:nameVal||'Illustrator',
+      email:emailVal||'',
+      spec:specVal||'Illustrator',
+      passportId:'SIP-'+new Date().getFullYear()+'-'+((emailVal||nameVal).toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX'),
+      registered:new Date().toLocaleDateString('en-GB')
+    };
+    closeModal();updateNav();showPage('dashboard');
+  }
+});
+
 function updateNav(){
   if(!user)return;
   const cta=document.querySelector('.nav-cta');
