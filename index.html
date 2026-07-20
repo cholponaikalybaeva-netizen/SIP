@@ -1189,17 +1189,25 @@ async function loadDashboard(){
 
 // ─── CHATBOT ──────────────────────────────────
 const cbQA=[
-  [/passport|style passport/i,'Your Style Passport documents your unique artistic fingerprint — color palettes, linework, composition. It serves as legal evidence if your style is ever copied by AI.'],
-  [/opt.?out|article 53|training/i,'Under Article 53 of the EU AI Act, you can formally request that AI companies remove your work from training datasets. SIP generates these legally-compliant letters for you.'],
-  [/detect|ai.?generat|check/i,'Upload any AI-generated image to our detection tool. We analyze stylistic fingerprints and flag overlap with your documented portfolio.'],
-  [/eu ai act|law|legal/i,"The EU AI Act (2024) is the world's first comprehensive AI regulation. It grants creators opt-out rights, transparency, and explanation rights."],
-  [/rights|what can i|protection/i,'You have three key rights: (1) Opt-out from AI training (Art. 53), (2) Transparency about usage (Art. 13), (3) Right to explanation (Art. 86).'],
-  [/illustrator|artist|creator/i,'SIP is built for illustrators. Your style is years of craft — not aesthetic preference, but creative identity.'],
-  [/berlin|macromedia|thesis/i,'SIP was developed as a bachelor thesis at Macromedia University of Applied Sciences, Berlin, 2026 by Cholponai Kalybaeva.'],
-  [/register|join|sign up/i,"Click 'Claim Your Passport' to register. It's free and takes under two minutes."],
-  [/hello|hi|hey/i,"Hello! I'm the SIP Assistant. Ask me about your rights as an illustrator, the EU AI Act, or how SIP works."],
+  [/hello|hi|hey|sup|yo/i,"Hi! I'm the SIP Assistant. Ask me about illustrator rights, the EU AI Act, how to register, or how the platform works."],
+  [/what.*sip|what is this|what.*platform|what.*do/i,"SIP — Style Identity Platform — helps illustrators document their visual style and protect it under the EU AI Act. You can register your style, get a Style Passport, and access your legal rights against AI misuse."],
+  [/passport|style passport|what.*passport/i,"Your Style Passport is a verified digital record of your unique artistic identity — your color palettes, linework, composition patterns. It's timestamped proof that your style exists and is yours, usable as legal evidence."],
+  [/how.*register|how.*join|how.*sign|how.*start/i,"Scroll down to the registration form on this page and fill it in. After submitting, come back and click 'Log In' with your email to access your passport and dashboard."],
+  [/login|log in|access.*dashboard|dashboard/i,"Click 'Log In' in the top navigation. Enter the email you registered with — your dashboard will open with your Style Passport."],
+  [/opt.?out|article 53|training data|remove.*work/i,"Under Article 53 of the EU AI Act, you can formally request AI companies remove your work from their training datasets. SIP generates a legally-compliant opt-out letter for you referencing your Passport ID."],
+  [/article 13|transparency|disclosure/i,"Article 13 requires AI systems to disclose when and how creative works were used. You can request this disclosure from any AI provider — SIP helps you draft the request."],
+  [/article 86|explanation|decision/i,"Article 86 gives you the right to a human-readable explanation of AI decisions that affect your work. You can formally request this from AI developers."],
+  [/eu ai act|law|legal|regulation/i,"The EU AI Act (2024) is the world's first comprehensive AI law. For illustrators it means: opt-out rights from training data (Art. 53), transparency about AI usage (Art. 13), and the right to explanation (Art. 86)."],
+  [/detect|ai.?generat|similar|copy|stolen|mimick/i,"If you suspect an AI has copied your style, upload the AI-generated image to the Conflict Detection section in your dashboard. It compares it against your registered style fingerprint."],
+  [/cost|free|price|paid/i,"SIP is completely free for illustrators. Registration takes under 2 minutes."],
+  [/style|color|linework|fingerprint|identity/i,"Your style is your identity — the accumulated result of years of creative decisions. SIP documents it formally: color palette tendencies, linework characteristics, compositional habits. This documentation is what gives you legal standing."],
+  [/illustrator|artist|creator|designer/i,"SIP is built specifically for illustrators. Your visual style is not just preference — it's creative property, and the EU AI Act now gives you tools to protect it."],
+  [/how.*work|explain|tell me more/i,"Here's how SIP works: (1) Register your style using the form below. (2) Receive your Style Passport — a verified record of your visual identity. (3) Log in to access your dashboard, rights centre, and conflict detection tools."],
+  [/berlin|macromedia|thesis|cholponai|kalybaeva/i,"SIP was created as a bachelor thesis by Cholponai Kalybaeva at Macromedia University of Applied Sciences, Berlin, 2026. It's a research prototype exploring how AI tools can protect, rather than exploit, illustrators' creative identity."],
+  [/thank|thanks|great|cool|nice|awesome/i,"You're welcome! Is there anything else you'd like to know about your rights or how SIP works?"],
+  [/help|what.*ask|what.*question/i,"You can ask me about: the EU AI Act, your rights as an illustrator, how the Style Passport works, how to register, how to detect AI style copying, or anything about the platform."],
 ];
-const cbDefault="Great question. SIP focuses on illustrator rights under the EU AI Act. Could you rephrase that about your style, rights, or the platform?";
+const cbDefault="I'm not sure about that one — but I can help with: registering your style, the EU AI Act, your legal rights as an illustrator, or how the Style Passport works. What would you like to know?";
 
 function toggleChat(){document.getElementById('cbWin').classList.toggle('open')}
 function cbSend(){
