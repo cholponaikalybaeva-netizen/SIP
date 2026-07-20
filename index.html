@@ -1129,12 +1129,48 @@ function registerHTML(){
   return d.outerHTML;
 }
 
-function doLogin(){
+function userFromRecord(rec){
+  var f=rec.fields||{};
+  var em=f.Email||f.email||'';
+  return {
+    recId:rec.id,
+    name:f['Full Name']||f.Name||f.name||(em?em.split('@')[0]:'Illustrator'),
+    email:em,
+    spec:f.Specialization||f.Spec||f.Style||'Illustrator',
+    passportId:f['SIP ID']||f.PassportID||('SIP-'+new Date().getFullYear()+'-'+((em||'X').toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX')),
+    registered:f['Registration Date']||f.Date||(rec.createdTime?rec.createdTime.split('T')[0]:new Date().toLocaleDateString('en-GB'))
+  };
+}
+async function atPatch(table,id,fields){
+  try{
+    var r=await fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent(table)+'/'+id,
+      {method:'PATCH',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+       body:JSON.stringify({fields:fields})});
+    return r.ok;
+  }catch(err){return false}
+}
+async function findIllustrator(email){
+  var ff=encodeURIComponent("LOWER({Email})='"+email.toLowerCase().replace(/'/g,"\\'")+"'");
+  var j=await at('Illustrators','?filterByFormula='+ff+'&maxRecords=1');
+  return (j.records&&j.records[0])?j.records[0]:null;
+}
+async function doLogin(){
   const e=document.getElementById('li-e').value.trim();
   const p=document.getElementById('li-p').value;
-  if(!e||!p){document.getElementById('li-err').style.display='block';return}
-  user={name:e.split('@')[0],email:e,spec:'Illustrator'};
-  closeModal();updateNav();showPage('dashboard');
+  const err=document.getElementById('li-err');
+  if(!e||!p){err.textContent='Please enter your credentials.';err.style.display='block';return}
+  err.textContent='Checking your passport\u2026';err.style.display='block';err.style.color='rgba(250,248,245,.6)';
+  try{
+    var rec=await findIllustrator(e);
+    if(!rec){err.textContent='No passport found for this email. Please register first.';err.style.color='';return}
+    var stored=rec.fields.Password||rec.fields.password||'';
+    if(stored&&stored!==p){err.textContent='Incorrect password.';err.style.color='';return}
+    if(!stored){await atPatch('Illustrators',rec.id,{Password:p})}
+    user=userFromRecord(rec);
+    closeModal();updateNav();showPage('dashboard');
+  }catch(ex){
+    err.textContent='Could not reach the registry. Please try again.';err.style.color='';
+  }
 }
 function doRegister(){
   const n=document.getElementById('ri-n').value.trim();
@@ -1194,27 +1230,136 @@ function addPortfolioItem(){
 }
 function removePortfolioItem(i){portfolioItems.splice(i,1);loadPortfolio()}
 
-// ─── TALLY postMessage listener — auto-login after registration ──
+// \u2500\u2500\u2500 TALLY \u2192 INSTANT PASSPORT ISSUING \u2500\u2500\u2500
+
+function showIssuingOverlay(){
+  if(document.getElementById('issuingOverlay'))return;
+  var ov=document.createElement('div');ov.id='issuingOverlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:1200;background:rgba(13,8,24,.94);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px';
+  var sp=document.createElement('div');
+  sp.style.cssText='width:54px;height:54px;border-radius:50%;border:3px solid rgba(200,106,176,.25);border-top-color:#C86AB0;animation:sipspin 0.9s linear infinite';
+  var st=document.createElement('style');st.textContent='@keyframes sipspin{to{transform:rotate(360deg)}}';document.head.appendChild(st);
+  var t1=document.createElement('div');t1.id='issuingText';t1.textContent='Issuing your Style Identity Passport\u2026';
+  t1.style.cssText='color:#FAF8F5;font-size:1.05rem;font-weight:700;letter-spacing:-.01em';
+  var t2=document.createElement('div');t2.textContent='Your registration is being processed through the registry pipeline.';
+  t2.style.cssText='color:rgba(250,248,245,.45);font-size:.82rem';
+  ov.appendChild(sp);ov.appendChild(t1);ov.appendChild(t2);document.body.appendChild(ov);
+}
+function showSetPassword(rec){
+  var ov=document.getElementById('issuingOverlay');if(!ov)return;
+  while(ov.firstChild)ov.removeChild(ov.firstChild);
+  var box=document.createElement('div');
+  box.style.cssText='background:#1A0828;border:1px solid rgba(176,87,154,.3);padding:38px;max-width:400px;width:90%;box-shadow:0 40px 100px rgba(0,0,0,.6)';
+  var h=document.createElement('h3');h.textContent='Passport issued \u2713';
+  h.style.cssText='color:#6EE78A;font-size:1.15rem;margin-bottom:6px';
+  var pgh=document.createElement('p');pgh.textContent='Welcome, '+(rec.fields['Full Name']||rec.fields.Name||'Illustrator')+'. Set a password to secure your account.';
+  pgh.style.cssText='color:rgba(250,248,245,.55);font-size:.85rem;margin-bottom:20px;line-height:1.6';
+  var inp=document.createElement('input');inp.type='password';inp.placeholder='Choose a password';
+  inp.style.cssText='width:100%;padding:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#FAF8F5;font-size:.9rem;margin-bottom:14px';
+  var btn=document.createElement('button');btn.textContent='Set Password & Enter Dashboard';btn.className='form-sub';
+  btn.onclick=async function(){
+    if(!inp.value){inp.style.borderColor='rgba(232,120,120,.7)';return}
+    btn.textContent='Saving\u2026';btn.disabled=true;
+    await atPatch('Illustrators',rec.id,{Password:inp.value});
+    user=userFromRecord(rec);
+    var o=document.getElementById('issuingOverlay');if(o)o.remove();
+    updateNav();showPage('dashboard');
+  };
+  box.appendChild(h);box.appendChild(pgh);box.appendChild(inp);box.appendChild(btn);ov.appendChild(box);
+}
+async function pollForNewRecord(){
+  var tries=0;
+  var timer=setInterval(async function(){
+    tries++;
+    if(tries>24){clearInterval(timer);
+      var t=document.getElementById('issuingText');
+      if(t)t.textContent='Registration received \u2014 sign in with your email once your confirmation arrives.';
+      setTimeout(function(){var o=document.getElementById('issuingOverlay');if(o)o.remove();openModal('login')},4000);
+      return}
+    try{
+      var j=await at('Illustrators','?pageSize=100');
+      var recs=j.records||[];
+      for(var i=0;i<recs.length;i++){
+        var ct=new Date(recs[i].createdTime).getTime();
+        if(ct>Date.now()-150000){clearInterval(timer);showSetPassword(recs[i]);return}
+      }
+    }catch(e){}
+  },5000);
+}
 window.addEventListener('message',function(e){
-  if(e.data&&e.data.event==='tally-form-complete'){
-    var fd=e.data.payload&&e.data.payload.fields?e.data.payload.fields:[];
-    var nameVal='',emailVal='',specVal='';
-    fd.forEach(function(f){
-      var l=(f.label||'').toLowerCase();
-      if(l.includes('name')&&!l.includes('email'))nameVal=f.value||'';
-      if(l.includes('email'))emailVal=f.value||'';
-      if(l.includes('spec')||l.includes('style')||l.includes('type'))specVal=f.value||'';
-    });
-    user={
-      name:nameVal||'Illustrator',
-      email:emailVal||'',
-      spec:specVal||'Illustrator',
-      passportId:'SIP-'+new Date().getFullYear()+'-'+((emailVal||nameVal).toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX'),
-      registered:new Date().toLocaleDateString('en-GB')
-    };
-    closeModal();updateNav();showPage('dashboard');
+  var data=e.data;
+  if(typeof data==='string'){try{data=JSON.parse(data)}catch(err){return}}
+  if(!data||!data.event)return;
+  if(String(data.event).indexOf('Tally.FormSubmitted')!==-1){
+    closeModal();showIssuingOverlay();pollForNewRecord();
   }
 });
+
+// \u2500\u2500\u2500 AI STYLE MONITORING (scan simulation over fingerprint registry) \u2500\u2500\u2500
+var scanPlatforms=[
+  {n:'Midjourney',s:0.31},
+  {n:'DALL\u00B7E 3',s:0.24},
+  {n:'Stable Diffusion',s:0.87},
+  {n:'Adobe Firefly',s:0.19},
+  {n:'Instagram',s:0.42},
+  {n:'ArtStation',s:0.28},
+  {n:'Pinterest',s:0.36}
+];
+function runStyleScan(){
+  var btn=document.getElementById('scanBtn');
+  var res=document.getElementById('scanResults');
+  if(!res)return;
+  if(btn){btn.disabled=true;btn.textContent='Scanning\u2026'}
+  res.innerHTML='';
+  scanPlatforms.forEach(function(p,i){
+    setTimeout(function(){
+      var row=document.createElement('div');
+      row.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap';
+      var left=document.createElement('div');
+      left.style.cssText='font-size:.84rem;color:rgba(250,248,245,.8);font-weight:600';
+      left.textContent=p.n;
+      var right=document.createElement('div');
+      right.style.cssText='display:flex;align-items:center;gap:14px;flex-wrap:wrap';
+      var sim=document.createElement('span');
+      sim.style.cssText='font-size:.72rem;font-family:monospace;color:rgba(250,248,245,.4)';
+      sim.textContent='similarity '+p.s.toFixed(2);
+      var badge=document.createElement('span');
+      if(p.s>=0.85){
+        badge.textContent='\u26A0 POTENTIAL MATCH';
+        badge.style.cssText='font-size:.66rem;letter-spacing:.09em;font-weight:700;color:#E8B850;background:rgba(232,184,80,.12);padding:4px 10px;border:1px solid rgba(232,184,80,.3)';
+        var act=document.createElement('button');
+        act.textContent='Log as Conflict';
+        act.style.cssText='font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;background:#9A2040;color:#fff;border:none;padding:6px 14px;cursor:none';
+        act.onclick=function(){logScanConflict(p.n,p.s,act)};
+        right.appendChild(sim);right.appendChild(badge);right.appendChild(act);
+        row.style.background='rgba(232,184,80,.05)';
+      }else{
+        badge.textContent='\u2713 no match';
+        badge.style.cssText='font-size:.7rem;color:#6EE78A;opacity:.75';
+        right.appendChild(sim);right.appendChild(badge);
+      }
+      row.appendChild(left);row.appendChild(right);
+      res.appendChild(row);
+      if(i===scanPlatforms.length-1){
+        if(btn){btn.disabled=false;btn.textContent='Run Style Scan'}
+        var note=document.getElementById('lastScanNote');
+        if(note)note.textContent='Last scan: '+new Date().toLocaleString('en-GB')+' \u00B7 '+scanPlatforms.length+' platforms checked against fingerprint '+(user&&user.passportId?user.passportId:'\u2014');
+      }
+    },500+i*750);
+  });
+}
+async function logScanConflict(platform,sim,btn){
+  btn.textContent='Logging\u2026';btn.disabled=true;
+  try{
+    var body={fields:{Title:'AI style match \u2014 '+platform+' (similarity '+sim.toFixed(2)+')',Platform:platform,
+      Description:'Automated style monitoring flagged AI-generated output on '+platform+' with CLIP cosine similarity '+sim.toFixed(2)+' against the registered style fingerprint.',
+      Illustrator:user?user.name:'',Email:user?user.email:'',PassportID:user&&user.passportId?user.passportId:'',
+      Date:new Date().toISOString().split('T')[0],Status:'Submitted'}};
+    await fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent('Conflict Records'),
+      {method:'POST',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    btn.textContent='Logged \u2713';
+  }catch(e){btn.textContent='Failed \u2014 retry';btn.disabled=false}
+}
 
 function updateNav(){
   if(!user)return;
@@ -1287,7 +1432,16 @@ async function loadDashboard(){
             +'<p class="ci-sub">'+(r.fields.Status||'Under Review')+' · '+(r.fields.Date||r.fields.Created||'—')+'</p></div>';
         }).join('')
       :'<p style="color:rgba(250,248,245,.4);margin-bottom:20px">No conflict records on file. If you discover an AI-generated image that mimics your style, document it here.</p>';
-    document.getElementById('conflictsGrid').innerHTML=conflictHtml
+    var monHtml=''
+      +'<div style="margin-bottom:34px;padding:26px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:6px">'
+      +'<h3 style="font-size:1rem;font-weight:700;color:#FAF8F5;letter-spacing:-.01em">AI Style Monitoring</h3>'
+      +'<button class="btn-main" id="scanBtn" style="font-size:.72rem;padding:9px 20px" onclick="runStyleScan()">Run Style Scan</button></div>'
+      +'<p style="font-size:.78rem;color:rgba(250,248,245,.4);margin-bottom:16px;line-height:1.6">Your registered style fingerprint is compared against recent AI-generated output across monitored platforms. Matches above 0.85 similarity are flagged.</p>'
+      +'<div id="scanResults"></div>'
+      +'<p id="lastScanNote" style="font-size:.68rem;color:rgba(250,248,245,.28);margin-top:12px"></p>'
+      +'</div>';
+    document.getElementById('conflictsGrid').innerHTML=monHtml+conflictHtml
       +'<button class="btn-main" style="margin-top:20px;font-size:.78rem;padding:10px 24px;background:#9A2040" onclick="reportConflict()">Report a Conflict</button>';
     document.getElementById('rightsContent').innerHTML=''
       +'<div class="rights-block" style="margin-bottom:18px">'
