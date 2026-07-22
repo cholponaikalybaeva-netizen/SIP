@@ -1173,7 +1173,7 @@ function userFromRecord(rec){
     name:f['Full Name']||f.Name||f.name||(em?em.split('@')[0]:'Illustrator'),
     email:em,
     spec:f.Specialization||f.Spec||f.Style||'Illustrator',
-    passportId:f['SIP ID']||f.PassportID||('SIP-'+new Date().getFullYear()+'-'+((em||'X').toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX')),
+    passportId:(function(){var s=f['SIP ID']||f.PassportID||'';if(s&&s.indexOf('NaN')===-1)return s;return 'SIP-'+new Date().getFullYear()+'-'+((em||'X').toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,6)||'XXX');})(),
     registered:f['Registration Date']||f.Date||(rec.createdTime?rec.createdTime.split('T')[0]:new Date().toLocaleDateString('en-GB'))
   };
 }
@@ -1326,12 +1326,69 @@ async function pollForNewRecord(){
     }catch(e){}
   },5000);
 }
+function tallyFieldValue(f){
+  var v=f.value;
+  if(Array.isArray(v)){
+    if(f.options&&f.options.length){
+      var labels=v.map(function(id){
+        var o=f.options.filter(function(op){return op.id===id})[0];
+        return o?o.text:id;
+      });
+      return labels.join(', ');
+    }
+    return v.join(', ');
+  }
+  return v==null?'':String(v);
+}
+function parseTally(fields){
+  var out={name:'',email:'',spec:''};
+  (fields||[]).forEach(function(f){
+    var l=(f.label||'').toLowerCase();
+    var val=tallyFieldValue(f);
+    if(l.indexOf('email')!==-1){out.email=val;return}
+    if((l.indexOf('name')!==-1)&&l.indexOf('user')===-1&&!out.name){out.name=val;return}
+    if(l.indexOf('special')!==-1||l.indexOf('style')!==-1||l.indexOf('medium')!==-1||l.indexOf('discipline')!==-1){if(!out.spec)out.spec=val;return}
+  });
+  return out;
+}
+async function createIllustratorRecord(info){
+  var fields={};
+  if(info.name)fields['Full Name']=info.name;
+  if(info.email)fields['Email']=info.email;
+  if(info.spec)fields['Specialization']=info.spec;
+  try{fields['Registration Date']=new Date().toISOString().split('T')[0];}catch(e){}
+  var body={fields:fields,typecast:true};
+  var r=await fetch('https://api.airtable.com/v0/'+BASE+'/'+encodeURIComponent('Illustrators'),
+    {method:'POST',headers:{Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('create failed '+r.status);
+  return r.json();
+}
+async function handleRegistration(fields){
+  closeModal();showIssuingOverlay();
+  var info=parseTally(fields);
+  // 1) If a record already exists for this email (Make may have created it), reuse it.
+  try{
+    if(info.email){
+      var existing=await findIllustrator(info.email);
+      if(existing){showSetPassword(existing);return;}
+    }
+  }catch(e){}
+  // 2) Otherwise create the record directly from the client (works even if Make.com fails).
+  try{
+    var rec=await createIllustratorRecord(info);
+    showSetPassword(rec);
+    return;
+  }catch(e){}
+  // 3) Last resort: poll in case Make eventually creates it.
+  pollForNewRecord();
+}
 window.addEventListener('message',function(e){
   var data=e.data;
   if(typeof data==='string'){try{data=JSON.parse(data)}catch(err){return}}
   if(!data||!data.event)return;
   if(String(data.event).indexOf('Tally.FormSubmitted')!==-1){
-    closeModal();showIssuingOverlay();pollForNewRecord();
+    var fields=(data.payload&&data.payload.fields)?data.payload.fields:[];
+    handleRegistration(fields);
   }
 });
 
