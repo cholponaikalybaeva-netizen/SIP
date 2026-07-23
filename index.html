@@ -913,6 +913,13 @@ footer p{font-size:.78rem;letter-spacing:.04em}
 
 </main>
 
+<!-- ─── PUBLIC PROFILE PAGE ────────────────────── -->
+<div id="page-profile" class="page" style="display:none">
+  <div style="max-width:760px;margin:0 auto">
+    <div id="profileContent"></div>
+  </div>
+</div>
+
 <!-- ─── AUTH MODAL ────────────────────────────── -->
 <div id="authModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
@@ -1110,13 +1117,54 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
 // ─── ROUTING ──────────────────────────────────
 function showPage(id){
-  ['home','dashboard'].forEach(p=>{
+  ['home','dashboard','profile'].forEach(p=>{
     const el=document.getElementById('page-'+p);
     if(el)el.style.display=p===id?'block':'none';
   });
   window.scrollTo(0,0);
   if(id==='dashboard')loadDashboard();
 }
+async function loadPublicProfile(sipId){
+  showPage('profile');
+  var c=document.getElementById('profileContent');
+  c.innerHTML='<p style="color:rgba(250,248,245,.4);padding:40px 0">Loading passport…</p>';
+  try{
+    var ff=encodeURIComponent("{SIP ID}='"+sipId.replace(/'/g,"")+"'");
+    var j=await at('Illustrators','?filterByFormula='+ff+'&maxRecords=1');
+    var rec=(j.records&&j.records[0])?j.records[0]:null;
+    if(!rec){
+      // fallback: scan for generated-format id match
+      var all=await at('Illustrators','?pageSize=100');
+      rec=(all.records||[]).filter(function(r){var u=userFromRecord(r);return u.passportId===sipId})[0]||null;
+    }
+    if(!rec){c.innerHTML='<div style="padding:60px 0;text-align:center"><h2 style="color:#FAF8F5;font-size:1.4rem;margin-bottom:10px">Passport not found</h2><p style="color:rgba(250,248,245,.45)">No registered Style Identity Passport matches '+sipId+'.</p><button class="btn-main" style="margin-top:24px" onclick="showPage(\'home\')">← Back to platform</button></div>';return}
+    var u=userFromRecord(rec);
+    c.innerHTML=''
+      +'<div style="text-align:center;margin-bottom:8px"><div style="font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(250,248,245,.35)">SIP · Public Style Identity Passport</div></div>'
+      +'<div class="dash-glow-card" style="padding:44px;text-align:center">'
+      +'<div style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:#FAF8F5;letter-spacing:-.02em">'+u.name+'</div>'
+      +'<div style="font-size:.95rem;color:rgba(250,248,245,.5);margin-top:6px">'+u.spec+'</div>'
+      +'<div style="display:inline-flex;gap:8px;align-items:center;margin-top:20px;padding:7px 18px;background:rgba(110,231,138,.1);border:1px solid rgba(110,231,138,.3);border-radius:2px"><span style="color:#6EE78A;font-size:.7rem">●</span><span style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#6EE78A;font-weight:700">EU AI Act · Protected</span></div>'
+      +'<div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:34px">'
+      +'<div><div style="font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.32);margin-bottom:5px">Passport ID</div><div style="font-family:monospace;font-size:.95rem;color:rgba(250,248,245,.9);letter-spacing:.08em">'+u.passportId+'</div></div>'
+      +'<div><div style="font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.32);margin-bottom:5px">Registered</div><div style="font-size:.95rem;color:rgba(250,248,245,.75)">'+u.registered+'</div></div>'
+      +'<div><div style="font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,248,245,.32);margin-bottom:5px">Issued</div><div style="font-size:.95rem;color:rgba(250,248,245,.75)">Berlin · EU</div></div>'
+      +'</div>'
+      +'<p style="font-size:.78rem;color:rgba(250,248,245,.4);margin-top:34px;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto">This illustrator has formally registered their aesthetic identity under the EU AI Act (Regulation (EU) 2024/1689). Their style is documented, timestamped, and eligible for Article 53 opt-out from AI training data.</p>'
+      +'</div>'
+      +'<div style="text-align:center;margin-top:28px"><button class="btn-main" onclick="showPage(\'home\')">← Back to platform</button></div>';
+  }catch(e){
+    c.innerHTML='<p style="color:rgba(250,248,245,.4);padding:40px 0">Could not load this passport. Please try again.</p>';
+  }
+}
+function handleRoute(){
+  var h=location.hash||'';
+  var m=h.match(/^#u\/(.+)$/);
+  if(m){loadPublicProfile(decodeURIComponent(m[1]));return true}
+  return false;
+}
+window.addEventListener('hashchange',function(){handleRoute()});
+document.addEventListener('DOMContentLoaded',function(){handleRoute()});
 
 function showTab(tab){
   ['overview','portfolio','conflicts','rights'].forEach(t=>{
@@ -1218,6 +1266,31 @@ function doRegister(){
 }
 // ─── PORTFOLIO ───────────────────────────────
 var portfolioItems=[];
+function buildTimeline(){
+  var events=[];
+  var reg=(user&&user.registered)?user.registered:new Date().toISOString().split('T')[0];
+  events.push({date:reg,label:'Style Identity registered',sub:(user&&user.passportId?user.passportId:'SIP passport issued'),kind:'reg'});
+  portfolioItems.forEach(function(it){
+    events.push({date:it.date||reg,label:it.title||'Portfolio piece',sub:(it.medium||'Work'),kind:'work'});
+  });
+  events.sort(function(a,b){return String(a.date).localeCompare(String(b.date))});
+  var dots=events.map(function(e,i){
+    var col=e.kind==='reg'?'#6EE78A':'#C86AB0';
+    return '<div style="display:flex;gap:16px;align-items:flex-start;position:relative;padding-bottom:'+(i===events.length-1?'0':'22px')+'">'
+      +'<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center">'
+      +'<div style="width:12px;height:12px;border-radius:50%;background:'+col+';box-shadow:0 0 10px '+col+'66"></div>'
+      +(i===events.length-1?'':'<div style="width:2px;flex:1;min-height:26px;background:rgba(255,255,255,.12);margin-top:4px"></div>')
+      +'</div>'
+      +'<div style="padding-top:-2px"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(250,248,245,.4)">'+e.date+'</div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:#FAF8F5;margin-top:2px">'+e.label+'</div>'
+      +'<div style="font-size:.76rem;color:rgba(250,248,245,.5)">'+e.sub+'</div></div>'
+      +'</div>';
+  }).join('');
+  return '<div style="margin:28px 0 8px;padding:26px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)">'
+    +'<h3 style="font-size:.95rem;font-weight:700;color:#FAF8F5;margin-bottom:5px">Style Identity Timeline</h3>'
+    +'<p style="font-size:.76rem;color:rgba(250,248,245,.4);margin-bottom:20px">A chronological record of your registration and portfolio development — the aesthetic trajectory that constitutes your identity capital.</p>'
+    +dots+'</div>';
+}
 function loadPortfolio(){
   var grid=document.getElementById('portfolioGrid');
   if(!grid)return;
@@ -1245,14 +1318,15 @@ function loadPortfolio(){
           +'</div>';
       }).join('')
     :'<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:rgba(250,248,245,.35);font-size:.88rem">No portfolio pieces yet. Add your first work above.</div>';
-  grid.innerHTML=addForm+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:8px">'+items+'</div>';
+  var timeline=buildTimeline();
+  grid.innerHTML=addForm+timeline+'<h3 style="font-size:.95rem;font-weight:700;color:#FAF8F5;margin:34px 0 14px">Registered Portfolio</h3>'+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:8px">'+items+'</div>';
 }
 function addPortfolioItem(){
   var t=document.getElementById('port-title');
   var u=document.getElementById('port-url');
   var m=document.getElementById('port-med');
   if(!t||!t.value.trim()){if(t)t.style.borderColor='rgba(232,120,120,.6)';return}
-  portfolioItems.push({title:t.value.trim(),url:u?u.value.trim():'',medium:m?m.value:'Other'});
+  portfolioItems.push({title:t.value.trim(),url:u?u.value.trim():'',medium:m?m.value:'Other',date:new Date().toISOString().split('T')[0]});
   // Optional: save to Airtable Portfolio table
   if(user){
     var body={fields:{Title:t.value.trim(),ImageURL:u?u.value.trim():'',Medium:m?m.value:'Other',
@@ -1523,6 +1597,22 @@ async function loadDashboard(){
       +'<div class="data-card" style="border-top:2px solid rgba(110,231,138,.4)">'
       +'<p class="dc-label">EU AI Act Status</p>'
       +'<p class="dc-val" style="font-size:1.1rem;color:#6EE78A">Protected</p></div>';
+    // ── ASSERTION STATUS PANEL ──
+    var asrt=document.getElementById('assertionPanel');
+    if(!asrt){
+      asrt=document.createElement('div');asrt.id='assertionPanel';
+      asrt.style.cssText='margin-top:26px;padding:24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)';
+      over.appendChild(asrt);
+    }
+    asrt.innerHTML=''
+      +'<h3 style="font-size:1rem;font-weight:700;color:#FAF8F5;margin-bottom:4px">Assertion Status</h3>'
+      +'<p style="font-size:.76rem;color:rgba(250,248,245,.4);margin-bottom:18px">The current state of your legal assertions and passport registration.</p>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">'
+      +'<div style="padding:14px 16px;background:rgba(110,231,138,.06);border-left:2px solid rgba(110,231,138,.5)"><div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(250,248,245,.4);margin-bottom:5px">Passport</div><div style="font-size:.85rem;color:#6EE78A;font-weight:700">● Issued · '+pid+'</div></div>'
+      +'<div style="padding:14px 16px;background:rgba(200,106,176,.06);border-left:2px solid rgba(200,106,176,.5)"><div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(250,248,245,.4);margin-bottom:5px">Art. 53 Opt-Out</div><div style="font-size:.85rem;color:rgba(250,248,245,.85)">Available to generate</div></div>'
+      +'<div style="padding:14px 16px;background:rgba(94,200,192,.06);border-left:2px solid rgba(94,200,192,.5)"><div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(250,248,245,.4);margin-bottom:5px">Registered</div><div style="font-size:.85rem;color:rgba(250,248,245,.85)">'+(user&&user.registered?user.registered:'—')+'</div></div>'
+      +'<div style="padding:14px 16px;background:rgba(232,184,80,.06);border-left:2px solid rgba(232,184,80,.5)"><div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(250,248,245,.4);margin-bottom:5px">Public Profile</div><div style="font-size:.8rem;color:rgba(250,248,245,.85)"><a href="#u/'+pid+'" style="color:#E8B850;cursor:none" onclick="setTimeout(function(){location.reload()},50)">View / share ↗</a></div></div>'
+      +'</div>';
     var conflictHtml=confs.records.length
       ?confs.records.slice(0,10).map(function(r){
           return '<div class="conflict-item"><p class="ci-ttl">'+(r.fields.Title||r.fields.Name||'Conflict Record')+'</p>'
