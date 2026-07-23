@@ -1374,22 +1374,15 @@ function showSetPassword(rec){
   var inp=document.createElement('input');inp.type='password';inp.placeholder='Choose a password';
   inp.style.cssText='width:100%;padding:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#FAF8F5;font-size:.9rem;margin-bottom:14px';
   var btn=document.createElement('button');btn.textContent='Set Password & Enter Dashboard';btn.className='form-sub';
-  function enterDashboard(){
-    user=userFromRecord(rec);
-    if(inp.value)user.pw=inp.value;
-    var o=document.getElementById('issuingOverlay');if(o)o.remove();
-    updateNav();showPage('dashboard');
-  }
   btn.onclick=function(){
     if(!inp.value){inp.style.borderColor='rgba(232,120,120,.7)';return}
-    btn.textContent='Saving\u2026';btn.disabled=true;
-    var done=false;
-    var go=function(){if(done)return;done=true;enterDashboard();};
-    // save password in background, but never block entry to the dashboard
-    try{
-      atPatch('Illustrators',rec.id,{Password:inp.value}).then(go,go);
-    }catch(e){go();}
-    setTimeout(go,3500); // hard fallback: enter dashboard after 3.5s no matter what
+    // Enter the dashboard IMMEDIATELY. Save the password silently in the background — never wait for it.
+    var pwv=inp.value;
+    user=userFromRecord(rec);
+    user.pw=pwv;
+    var o=document.getElementById('issuingOverlay');if(o)o.remove();
+    updateNav();showPage('dashboard');
+    try{ atPatch('Illustrators',rec.id,{Password:pwv}); }catch(e){}
   };
   box.appendChild(h);box.appendChild(pgh);box.appendChild(inp);box.appendChild(btn);ov.appendChild(box);
 }
