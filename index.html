@@ -1376,12 +1376,16 @@ function showSetPassword(rec){
   var btn=document.createElement('button');btn.textContent='Set Password & Enter Dashboard';btn.className='form-sub';
   btn.onclick=function(){
     if(!inp.value){inp.style.borderColor='rgba(232,120,120,.7)';return}
-    // Enter the dashboard IMMEDIATELY. Save the password silently in the background — never wait for it.
     var pwv=inp.value;
-    user=userFromRecord(rec);
-    user.pw=pwv;
+    // 1) set the user (defensive — never let this block the redirect)
+    try{ user=userFromRecord(rec); }catch(e){ user={recId:(rec&&rec.id)||'',name:(rec&&rec.fields&&(rec.fields['Full Name']||rec.fields.Name))||'Illustrator',email:(rec&&rec.fields&&(rec.fields.Email||rec.fields.email))||'',spec:'Illustrator',passportId:'SIP-'+new Date().getFullYear()+'-XXX',registered:new Date().toLocaleDateString('en-GB')}; }
+    if(user)user.pw=pwv;
+    // 2) remove the overlay
     var o=document.getElementById('issuingOverlay');if(o)o.remove();
-    updateNav();showPage('dashboard');
+    // 3) go to the dashboard FIRST, no matter what
+    try{ showPage('dashboard'); }catch(e){ var pd=document.getElementById('page-dashboard'); if(pd)pd.style.display='block'; var ph=document.getElementById('page-home'); if(ph)ph.style.display='none'; }
+    // 4) update nav + save password, both non-blocking
+    try{ updateNav(); }catch(e){}
     try{ atPatch('Illustrators',rec.id,{Password:pwv}); }catch(e){}
   };
   box.appendChild(h);box.appendChild(pgh);box.appendChild(inp);box.appendChild(btn);ov.appendChild(box);
